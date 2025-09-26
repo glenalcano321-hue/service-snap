@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finding Service</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg:#e5e7eb; --card:#1e293b; --muted:#9aa2b1;
+      --text:#f5f5f5; --accent:#3b82f6; --ok:#22c55e; --err:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:var(--bg); color:var(--text); min-height:100vh; display:grid; place-items:center;
+    }
+    .wrap {width:100%; max-width:560px; padding:24px;}
+    header{text-align:center; margin-bottom:18px;}
+    header h1{margin:0 0 6px; font-size:1.6rem; color:#111827;}
+    header p{margin:0; color:#374151;}
+    .card {
+      background:var(--card); border-radius:18px; padding:20px;
+      box-shadow:0 10px 25px rgba(0,0,0,.2);
+    }
+    .tabs{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+    .tab-btn{
+      background:#334155; color:var(--muted); border:1px solid #475569;
+      padding:10px; border-radius:12px; cursor:pointer; transition:background .3s,color .3s
+    }
+    .tab-btn[aria-selected="true"] {
+      color:var(--text); background:var(--accent);
+      border-color:var(--accent); box-shadow:0 0 10px rgba(59,130,246,.4)
+    }
+    form{display:grid; gap:10px;}
+    label{display:grid; gap:6px; font-size:.9rem; color:var(--text);}
+    input[type="email"], input[type="password"], input[type="text"] {
+      background:#0f172a; color:var(--text);
+      border:1px solid #475569; border-radius:12px; padding:12px; width:100%;
+      transition:border-color .3s ease;
+    }
+    input:focus{outline:none; border-color:var(--accent);}
+    .actions{display:flex; gap:10px; align-items:center;}
+    button.primary {
+      background:var(--accent); color:#fff; border:none; border-radius:12px;
+      padding:10px 14px; cursor:pointer; font-weight:600; transition:background .3s
+    }
+    button.primary:hover{background:#2563eb}
+    button.ghost{
+      background:transparent; border:1px solid #475569; color:var(--text);
+      border-radius:12px; padding:10px 14px; cursor:pointer
+    }
+    .msg{font-size:.9rem; padding:8px 10px; border-radius:10px;}
+    .msg.ok{background:rgba(34,197,94,.1); border:1px solid var(--ok); color:#bff6cd;}
+    .msg.err{background:rgba(239,68,68,.1); border:1px solid var(--err); color:#ffc0c0;}
+    .hidden{display:none !important;}
+
+    /* Panel sliding system */
+    .panel-wrap {position:relative; overflow:hidden;}
+    .panels {
+      display:flex; width:200%; transition:transform .32s cubic-bezier(.22,.61,.36,1);
+    }
+    .tabpanel {width:50%; padding:2px;}
+    .panels.to-login   { transform: translateX(0%); }
+    .panels.to-signup  { transform: translateX(-50%); }
+
+    /* Password field */
+    .password-field{position:relative; height:48px;}
+    .password-field input {
+      width: 100%;
+      height: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: var(--text);
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .password-field input:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    .toggle-btn{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:transparent; border:none; color:var(--muted);
+      font-size:18px; cursor:pointer; z-index:2; transition:color .2s;
+      user-select:none;
+    }
+    .toggle-btn:hover{color:var(--accent);}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Finding Service</h1>
+      <p>Log in or create a new account to get started.</p>
+    </header>
+
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn" id="tab-login" aria-selected="true" aria-controls="panel-login" role="tab">Log in</button>
+        <button class="tab-btn" id="tab-signup" aria-selected="false" aria-controls="panel-signup" role="tab">Sign up</button>
+      </div>
+
+      <div class="panel-wrap">
+        <div id="panels" class="panels to-login" aria-live="polite">
+
+          <!-- LOGIN PANEL -->
+          <div id="panel-login" class="tabpanel" role="tabpanel" aria-labelledby="tab-login">
+            <form id="loginForm" autocomplete="on">
+              <label>Email
+                <input name="email" type="email" placeholder="you@example.com" required />
+              </label>
+              <label>Password
+                <div id="loginPasswordField" class="password-field">
+                  <input id="loginPass" name="password" type="password" minlength="8" placeholder="••••••••" required />
+                  <button class="toggle-btn" type="button" aria-label="Show password" aria-pressed="false">👁️</button>
+                </div>
+              </label>
+              <div class="actions"><button class="primary" type="submit">Log in</button></div>
+              <div class="actions" style="justify-content:flex-start; margin-top:-4px;">
+                <a href="#" id="forgotLink" style="font-size:.9rem;color:#3b82f6; text-decoration:underline; cursor:pointer;">
+                  Forgot your password?
+                </a>
+              </div>
+              <p class="msg hidden" id="loginMsg"></p>
+            </form>
+          </div>
+
+          <!-- SIGNUP PANEL -->
+          <div id="panel-signup" class="tabpanel" role="tabpanel" aria-labelledby="tab-signup">
+            <form id="signupForm" autocomplete="off">
+              <label>Name <input name="name" type="text" placeholder="Name" /></label>
+              <label>Email <input name="email" type="email" placeholder="you@example.com" required /></label>
+              <label>Password
+                <div id="signupPasswordField" class="password-field">
+                  <input id="signupPass" name="password" type="password" minlength="8" placeholder="At least 8 characters" required />
+                  <button class="toggle-btn" type="button" aria-label="Show password" aria-pressed="false">👁️</button>
+                </div>
+              </label>
+              <label>Confirm password
+                <input id="signupPass2" type="password" minlength="8" placeholder="Repeat password" required />
+              </label>
+              <div class="actions">
+                <button class="primary" type="submit">Create account</button>
+                <button class="ghost" type="reset">Reset</button>
+              </div>
+              <p class="msg hidden" id="signupMsg"></p>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
+      authDomain: "finding-service-auth.firebaseapp.com",
+      projectId: "finding-service-auth",
+      storageBucket: "finding-service-auth.appspot.com",
+      messagingSenderId: "404280706761",
+      appId: "1:404280706761:web:8c808b583447b133832f18"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // Show messages
+    function showMsg(el, text, isErr){
+      el.textContent = text;
+      el.className = 'msg ' + (isErr ? 'err' : 'ok');
+      el.classList.remove('hidden');
+      setTimeout(()=>el.classList.add('hidden'), 3500);
+    }
+
+    // Navigation panels
+    const panels = document.getElementById('panels');
+    const tabLogin  = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+    const forgotLink = document.getElementById('forgotLink');
+
+    function showTab(which){
+      panels.classList.remove('to-login','to-signup');
+      panels.classList.add('to-' + which);
+      tabLogin.setAttribute('aria-selected', String(which==='login'));
+      tabSignup.setAttribute('aria-selected', String(which==='signup'));
+    }
+    tabLogin.addEventListener('click', ()=>showTab('login'));
+    tabSignup.addEventListener('click', ()=>showTab('signup'));
+    forgotLink.addEventListener('click', e => { e.preventDefault(); alert("Reset password functionality moved to login page or new flow."); });
+
+    // Smooth password reveal for one input field with toggle button
+    function setupRevealPassword(fieldId, inputId) {
+      const wrap = document.getElementById(fieldId);
+      if (!wrap) return;
+      const input = document.getElementById(inputId);
+      const toggle = wrap.querySelector('.toggle-btn');
+      toggle.addEventListener('click', () => {
+        const isPwd = input.type === 'password';
+        input.type = isPwd ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', String(isPwd));
+        toggle.textContent = isPwd ? '🙈' : '👁️';
+        input.focus({ preventScroll: true });
+        try { input.setSelectionRange(input.value.length, input.value.length); } catch (e) {}
+      });
+    }
+    setupRevealPassword('loginPasswordField', 'loginPass');
+    setupRevealPassword('signupPasswordField', 'signupPass');
+
+    // Prevent redirect during sign-up
+    let SUPPRESS_REDIRECT = false;
+
+    // Auth state listener
+    auth.onAuthStateChanged(async (user) => {
+      if (SUPPRESS_REDIRECT) return;
+      if (/feed\.html$/i.test(location.pathname)) return;
+      if (user) {
+        try {
+          // Get user's role from Firestore
+          const snap = await db.collection('users').doc(user.uid).get();
+          const role = snap.exists && snap.data().role ? snap.data().role : 'family';
+          // Redirect to feed.html and pass the role as a query param
+          window.location.replace(`feed.html?role=${encodeURIComponent(role)}`);
+        } catch (e) {
+          console.error('Role fetch failed, fallback to feed.html', e);
+          window.location.replace('feed.html');
+        }
+      }
+    });
+
+    // Signup form submit handler with redirect to service-intent.html
+    document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const f = e.currentTarget;
+      const email = f.email.value.trim().toLowerCase();
+      const name  = f.name.value.trim();
+      const pass  = document.getElementById('signupPass').value;
+      const pass2 = document.getElementById('signupPass2').value;
+      const msg   = document.getElementById('signupMsg');
+
+      // Basic validations
+      if (pass !== pass2) return showMsg(msg, 'Passwords do not match', true);
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showMsg(msg,'Enter a valid email',true);
+      if (pass.length < 8) return showMsg(msg,'Password must be at least 8 characters',true);
+
+      try {
+        SUPPRESS_REDIRECT = true;
+        const { user } = await auth.createUserWithEmailAndPassword(email, pass);
+
+        if (name) {
+          await user.updateProfile({ displayName: name });
+        }
+
+        // Save name, email, and role (default "family")
+        await db.collection("users").doc(user.uid).set({
+          name,
+          email,
+          role: "family",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showMsg(msg, 'Account created! Redirecting to service intent selection...', false);
+        f.reset();
+        setTimeout(() => { 
+          SUPPRESS_REDIRECT = false; 
+          window.location.href = 'service-intent.html'; 
+        }, 400);
+      } catch (err) {
+        SUPPRESS_REDIRECT = false;
+        console.error(err);
+        showMsg(msg, 'Firebase: ' + (err.message || 'Sign up failed'), true);
+      }
+    });
+
+    // Login form submit handler
+    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const f = e.currentTarget;
+      const email = f.email.value.trim().toLowerCase();
+      const pass  = document.getElementById('loginPass').value;
+      const msg   = document.getElementById('loginMsg');
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        showMsg(msg,'Welcome back!',false);
+        setTimeout(()=>window.location.href="feed.html",700);
+      } catch (err) {
+        console.error(err);
+        showMsg(msg, 'Firebase: ' + (err.message || 'Login failed'), true);
+      }
+    });
+  </script>
+</body>
+</html>

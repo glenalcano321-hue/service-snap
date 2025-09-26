@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reset Password</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 14px;
+      width: 100%;
+      padding: 12px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    p {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Reset Your Password</h2>
+    <p>Enter your new password below.</p>
+    <input id="newPassword" type="password" placeholder="New password" minlength="8" required />
+    <button id="resetBtn">Reset Password</button>
+    <p id="message"></p>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
+      authDomain: "finding-service-auth.firebaseapp.com",
+      projectId: "finding-service-auth",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode"); // Firebase provides this automatically
+    const message = document.getElementById("message");
+
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+      const newPassword = document.getElementById("newPassword").value;
+
+      if (newPassword.length < 8) {
+        message.textContent = "Password must be at least 8 characters.";
+        message.style.color = "red";
+        return;
+      }
+
+      try {
+        await auth.confirmPasswordReset(oobCode, newPassword);
+        message.textContent = "✅ Password has been reset successfully!";
+        message.style.color = "green";
+        setTimeout(() => {
+          window.location.href = "index.html"; // Redirect to login page
+        }, 2000);
+      } catch (error) {
+        console.error(error);
+        message.textContent = "❌ Error: " + error.message;
+        message.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

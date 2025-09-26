@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>My Profile - HomeServices</title>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-light: #334155;
+      --text: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --error: #ef4444;
+      --border: #334155;
+      --border-light: #475569;
+      --input-bg: #1e293b;
+      --input-focus: #475569;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, var(--bg) 0%, #1e293b 100%);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    .header { text-align: center; margin-bottom: 32px; }
+    .header h1 {
+      font-size: 2.5rem; font-weight: 700; margin: 0 0 8px 0;
+      background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .header p { color: var(--text-muted); font-size: 1.1rem; margin: 0; }
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .card-title { flex: 1; }
+    .card-title h2 { font-size: 1.875rem; font-weight: 600; margin: 0 0 6px 0; color: var(--text); }
+    .card-title p { color: var(--text-muted); margin: 0; font-size: 1rem; }
+    .back-link {
+      color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px; transition: all 0.2s ease; font-weight: 500;
+    }
+    .back-link:hover { background: rgba(59, 130, 246, 0.2); transform: translateY(-1px); }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 24px 0; border: none; }
+    .form-grid { display: grid; gap: 24px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .card-header { flex-direction: column; align-items: stretch; }
+    }
+    .field-group { display: flex; flex-direction: column; }
+    .field-label { font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .field-input, .field-textarea, .field-select {
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+      color: var(--text); font-size: 1rem; transition: all 0.2s ease; font-family: inherit;
+    }
+    .field-input:focus, .field-textarea:focus, .field-select:focus { outline: none; border-color: var(--accent); background: var(--input-focus); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .field-input:disabled { background: var(--card-light); color: var(--text-muted); cursor: not-allowed; }
+    .field-textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+    .field-select { cursor: pointer; }
+    .char-counter { margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); text-align: right; }
+    .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; cursor: pointer; transition: all 0.2s ease; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); }
+    .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--card-light); border-color: var(--border-light); }
+    .message { margin-top: 16px; padding: 12px 16px; border-radius: 12px; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .message.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+    .message.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+    .hidden { display: none !important; }
+    .login-prompt { text-align: center; padding: 40px 20px; }
+    .login-prompt h3 { margin: 0 0 16px 0; color: var(--text); font-size: 1.25rem; }
+    .login-prompt p { color: var(--text-muted); margin: 0 0 24px 0; }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 700; color: white; margin: 0 auto 16px auto;
+    }
+    .service-option { display: flex; align-items: center; gap: 8px; padding: 8px; font-size: 1rem; }
+    .service-emoji { font-size: 1.2em; width: 24px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏠 HomeServices</h1>
+      <p>Connect families with trusted home service professionals</p>
+    </div>
+
+    <div class="profile-card">
+      <div id="authed" class="hidden">
+        <div class="card-header">
+          <div class="card-title">
+            <h2>My Profile</h2>
+            <p>Manage your account information and service preferences</p>
+          </div>
+          <a href="feed.html" class="back-link">← Back to Services</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label">Full Name</label>
+              <input id="name" type="text" class="field-input" placeholder="Enter your full name" maxlength="80"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Email Address</label>
+              <input id="email" type="email" class="field-input" disabled/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">I am looking for</label>
+            <select id="role" class="field-select">
+              <optgroup label="🏠 Home Services">
+                <option value="cleaning" class="service-option">🧹 House Cleaning Services</option>
+                <option value="childcare" class="service-option">👶 Child Care / Nanny Services</option>
+                <option value="eldercare" class="service-option">👴 Elder Care Services</option>
+                <option value="cooking" class="service-option">👩‍🍳 Personal Chef / Cooking Services</option>
+                <option value="maintenance" class="service-option">🔧 Home Maintenance Services</option>
+                <option value="gardening" class="service-option">🌱 Garden Care / Landscaping</option>
+              </optgroup>
+              <optgroup label="💼 Service Provider">
+                <option value="provider-cleaning" class="service-option">🧹 I provide house cleaning services</option>
+                <option value="provider-childcare" class="service-option">👶 I provide child care services</option>
+                <option value="provider-eldercare" class="service-option">👴 I provide elder care services</option>
+                <option value="provider-cooking" class="service-option">👩‍🍳 I provide cooking services</option>
+                <option value="provider-maintenance" class="service-option">🔧 I provide maintenance services</option>
+                <option value="provider-gardening" class="service-option">🌱 I provide gardening services</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">About Me</label>
+            <textarea 
+              id="bio" 
+              class="field-textarea" 
+              maxlength="600" 
+              placeholder="Tell us about yourself... If you're looking for services, describe what you need, your family situation, location, and requirements. If you're a service provider, share your experience, skills, and what makes you special."
+            ></textarea>
+            <div id="count" class="char-counter">0 / 600</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <!-- Only shown to service providers, or just after registration -->
+          <button id="listServiceBtn" class="btn btn-primary hidden" type="button">List a Service</button>
+
+          <button id="saveBtn" class="btn btn-primary">
+            <span id="saveText">Save Changes</span>
+            <span id="saveLoader" class="loading hidden"></span>
+          </button>
+          <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+        </div>
+
+        <div id="msg" class="message hidden"></div>
+      </div>
+
+      <div id="anon" class="login-prompt">
+        <div class="avatar">?</div>
+        <h3>Authentication Required</h3>
+        <p>Please sign in to view and edit your profile information.</p>
+        <a href="index.html" class="btn btn-primary">Go to Login</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
+      authDomain: "finding-service-auth.firebaseapp.com",
+      projectId: "finding-service-auth",
+      storageBucket: "finding-service-auth.appspot.com",
+      messagingSenderId: "404280706761",
+      appId: "1:404280706761:web:8c808b583447b133832f18"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // DOM elements
+    const $ = (id) => document.getElementById(id);
+    const authed = $('authed');
+    const anon = $('anon');
+    const nameInput = $('name');
+    const emailInput = $('email');
+    const roleSelect = $('role');
+    const bioInput = $('bio');
+    const count = $('count');
+    const msg = $('msg');
+    const saveBtn = $('saveBtn');
+    const saveText = $('saveText');
+    const saveLoader = $('saveLoader');
+    const signOutBtn = $('signOutBtn');
+    const listServiceBtn = $('listServiceBtn');
+
+    // ---- NEW: Check for justRegistered param -----
+    function getQueryParam(param) {
+      return new URLSearchParams(window.location.search).get(param);
+    }
+    const justRegistered = getQueryParam('justRegistered') === '1';
+
+    function showMsg(text, isSuccess = true) {
+      msg.textContent = text;
+      msg.className = `message ${isSuccess ? 'success' : 'error'}`;
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 4000);
+    }
+
+    function setLoading(loading) {
+      if (loading) {
+        saveText.classList.add('hidden');
+        saveLoader.classList.remove('hidden');
+        saveBtn.disabled = true;
+      } else {
+        saveText.classList.remove('hidden');
+        saveLoader.classList.add('hidden');
+        saveBtn.disabled = false;
+      }
+    }
+
+    // Character counter
+    bioInput.addEventListener('input', () => {
+      const length = bioInput.value.length;
+      count.textContent = `${length} / ${bioInput.maxLength}`;
+      count.style.color = length > 550 ? '#fca5a5' : 'var(--text-muted)';
+    });
+
+    // Authentication state observer
+    let currentUID = null;
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        authed.classList.add('hidden');
+        anon.classList.remove('hidden');
+        return;
+      }
+
+      authed.classList.remove('hidden');
+      anon.classList.add('hidden');
+      currentUID = user.uid;
+      emailInput.value = user.email || '';
+
+      try {
+        const snap = await db.collection('users').doc(user.uid).get();
+        const data = snap.exists ? snap.data() : {};
+
+        nameInput.value = user.displayName || data.name || '';
+
+        // Handle role mapping - map old values to new service-specific ones
+        let roleValue = data.role || 'cleaning';
+        if (roleValue === 'family') {
+          roleValue = 'cleaning';
+        } else if (roleValue === 'worker') {
+          roleValue = 'provider-cleaning';
+        }
+        roleSelect.value = roleValue;
+
+        bioInput.value = data.bio || '';
+
+        // Update counter
+        const length = bioInput.value.length;
+        count.textContent = `${length} / ${bioInput.maxLength}`;
+
+        // ---- MODIFIED: Show service button if provider or just registered ---
+        const isProvider = (data?.userType === 'provider') || roleSelect.value.startsWith('provider-');
+        if (isProvider || justRegistered) {
+          listServiceBtn.classList.remove('hidden');
+          // Remove justRegistered param from the URL after showing (for once only)
+          if (justRegistered) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } else {
+          listServiceBtn.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
+        showMsg('Unable to load profile data. Please refresh the page.', false);
+      }
+    });
+
+    // Redirect to add-service page (adjust filename if different)
+    listServiceBtn.addEventListener('click', () => {
+      window.location.href = 'add-service.html';
+    });
+
+    // Save profile
+    saveBtn.addEventListener('click', async () => {
+      if (!currentUID) return;
+
+      const name = nameInput.value.trim().slice(0, 80);
+      const role = roleSelect.value;
+      const bio = bioInput.value.trim().slice(0, 600);
+
+      if (!name) {
+        showMsg('Please enter your name', false);
+        nameInput.focus();
+        return;
+      }
+      if (!role) {
+        showMsg('Please select what you are looking for', false);
+        roleSelect.focus();
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        // Update Firebase Auth profile
+        if (auth.currentUser && name && auth.currentUser.displayName !== name) {
+          await auth.currentUser.updateProfile({ displayName: name });
+        }
+
+        // Determine user type based on role selection
+        const isProvider = role.startsWith('provider-');
+        const serviceType = isProvider ? role.replace('provider-', '') : role;
+
+        // Update Firestore with enhanced data
+        await db.collection('users').doc(currentUID).set({
+          name,
+          role, // Store the full role value
+          serviceType, // Store just the service category
+          userType: isProvider ? 'provider' : 'client', // Store user type
+          bio,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        // Show or hide the List Service button based on saved role (justRegistered is now one-time)
+        if (isProvider) {
+          listServiceBtn.classList.remove('hidden');
+        } else {
+          listServiceBtn.classList.add('hidden');
+        }
+
+        showMsg('Profile updated successfully!', true);
+      } catch (error) {
+        console.error('Save error:', error);
+        showMsg('Failed to save profile. Please try again.', false);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Sign out
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await auth.signOut();
+        window.location.replace('index.html');
+      } catch (error) {
+        console.error('Sign out error:', error);
+        showMsg('Could not sign out. Please try again.', false);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        saveBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
