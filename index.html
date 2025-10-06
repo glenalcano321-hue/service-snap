@@ -208,7 +208,7 @@
         const isPwd = input.type === 'password';
         input.type = isPwd ? 'text' : 'password';
         toggle.setAttribute('aria-pressed', String(isPwd));
-        toggle.textContent = isPwd ? '🙈' : '👁️';
+        toggle.textContent = isPwd ? '' : '';
         input.focus({ preventScroll: true });
         try { input.setSelectionRange(input.value.length, input.value.length); } catch (e) {}
       });
@@ -300,5 +300,6 @@
   </script>
 </body>
 </html>
+
 
 
