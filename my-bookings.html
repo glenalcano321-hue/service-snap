@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My Bookings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border: #334155;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .header h1 { margin: 0; font-size: 1.5rem; }
+    
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* Booking Card */
+    .booking-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .booking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .service-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+    }
+
+    .booking-meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* --- SERVICE TRACKER STYLES --- */
+    .tracker-container {
+      margin: 20px 0;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+    
+    .tracker-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #334155;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.5s ease-in-out;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .tracker-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Status Badges */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-accepted { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-in_progress { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .badge-completed { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Actions Section */
+    .booking-actions {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+
+    .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-outline:hover { border-color: var(--text); color: var(--text); }
+
+    .loading-text { text-align: center; color: var(--text-muted); margin-top: 40px; }
+    .empty-state { text-align: center; color: var(--text-muted); padding: 40px; background: var(--card); border-radius: 16px; border: 1px dashed var(--border); }
+
+    /* Review Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none; justify-content: center; align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+    .modal {
+      background: var(--card);
+      width: 90%; max-width: 400px;
+      padding: 24px; border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .modal h2 { margin-top: 0; }
+    .star-rating { font-size: 2rem; color: var(--text-muted); cursor: pointer; display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+    .star-rating span:hover, .star-rating span.active { color: var(--warning); }
+    textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; min-height: 80px; margin-bottom: 16px; font-family: inherit; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>My Bookings</h1>
+      <a href="feed.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <div id="bookingsList">
+      <div class="loading-text">Loading your bookings...</div>
+    </div>
+  </div>
+
+  <div id="reviewModal" class="modal-overlay">
+    <div class="modal">
+      <h2>Rate Service</h2>
+      <p style="color:var(--text-muted)">How was your experience?</p>
+      
+      <div class="star-rating" id="starContainer">
+        <span data-val="1">★</span>
+        <span data-val="2">★</span>
+        <span data-val="3">★</span>
+        <span data-val="4">★</span>
+        <span data-val="5">★</span>
+      </div>
+      
+      <textarea id="reviewText" placeholder="Write a brief review..."></textarea>
+      
+      <div class="modal-actions">
+        <button class="btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
+      authDomain: "finding-service-auth.firebaseapp.com",
+      projectId: "finding-service-auth",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const bookingsList = document.getElementById('bookingsList');
+    let currentUser = null;
+    let activeModalBookingId = null;
+    let activeModalProviderId = null;
+    let currentRating = 0;
+
+    // --- MOCK BOOKING DATA (For Demo) ---
+    const mockBookings = [
+      {
+        id: "mock_demo_123",
+        serviceId: "mock_svc_demo",
+        date: "2025-11-30",
+        time: "10:00 AM",
+        rooms: 3,
+        details: "Please use non-toxic cleaner for the nursery.",
+        status: "in_progress", // This triggers the 75% progress bar
+        role: "customer", // Shows 'Leave Review' or 'View Status' from client side
+        providerId: "mock_provider_1",
+        createdAt: { seconds: Date.now() / 1000 }
+      }
+    ];
+
+    // Listen for Auth
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentUser = user;
+      loadBookings(user.uid);
+    });
+
+    function loadBookings(uid) {
+      bookingsList.innerHTML = '<div class="loading-text">Loading...</div>';
+      
+      let allBookings = {};
+
+      const render = () => {
+        // Merge Real Bookings with Mock Bookings
+        const realBookingsList = Object.values(allBookings);
+        const combinedList = [...mockBookings, ...realBookingsList];
+        
+        // Sort by most recent
+        const sorted = combinedList.sort((a,b) => b.createdAt?.seconds - a.createdAt?.seconds);
+        
+        if (sorted.length === 0) {
+          bookingsList.innerHTML = `
+            <div class="empty-state">
+              <h3>No bookings found</h3>
+              <p>You haven't made or received any booking requests yet.</p>
+              <button class="btn-primary" onclick="window.location.href='feed.html'" style="margin-top:16px">Find Services</button>
+            </div>`;
+          return;
+        }
+
+        bookingsList.innerHTML = sorted.map(b => createBookingCard(b)).join('');
+      };
+
+      // 1. Query as Customer
+      db.collection('bookings').where('customerId', '==', uid)
+        .onSnapshot(snap => {
+          snap.forEach(doc => allBookings[doc.id] = { id: doc.id, ...doc.data(), role: 'customer' });
+          render();
+        });
+
+      // 2. Query as Provider
+      db.collection('bookings').where('providerId', '==', uid)
+        .onSnapshot(snap => {
+          snap.forEach(doc => allBookings[doc.id] = { id: doc.id, ...doc.data(), role: 'provider' });
+          render();
+        });
+        
+      // Initial render call to show mock data immediately even if DB empty
+      render();
+    }
+
+    function getProgressInfo(status) {
+      switch(status) {
+        case 'pending': return { percent: 5, label: 'Request Sent' };
+        case 'accepted': return { percent: 25, label: 'Scheduled / Not Started' };
+        case 'in_progress': return { percent: 75, label: 'In Progress / Working' };
+        case 'completed': return { percent: 100, label: 'Completed' };
+        case 'rejected': return { percent: 0, label: 'Cancelled' };
+        default: return { percent: 0, label: 'Unknown' };
+      }
+    }
+
+    function createBookingCard(booking) {
+      const isProvider = booking.role === 'provider';
+      const isCustomer = booking.role === 'customer';
+      const { percent, label } = getProgressInfo(booking.status);
+      
+      // Determine Actions
+      let actionsHtml = '';
+
+      if (booking.status === 'pending') {
+        if (isProvider) {
+          actionsHtml = `
+            <button class="btn-success" onclick="updateStatus('${booking.id}', 'accepted')">✓ Accept Request</button>
+            <button class="btn-danger" onclick="updateStatus('${booking.id}', 'rejected')">✕ Decline</button>
+          `;
+        } else {
+          actionsHtml = `<button class="btn-danger" onclick="updateStatus('${booking.id}', 'rejected')">Cancel Request</button>`;
+        }
+      } 
+      else if (booking.status === 'accepted') {
+        if (isProvider) {
+          actionsHtml = `
+            <button class="btn-outline" onclick="openChat('${booking.customerId}')">Message Client</button>
+            <button class="btn-primary" onclick="updateStatus('${booking.id}', 'in_progress')">▶ Start Job</button>
+          `;
+        } else {
+          actionsHtml = `
+            <button class="btn-outline" onclick="openChat('${booking.providerId}')">Message Provider</button>
+            <span style="color:var(--text-muted); font-size:0.9rem; align-self:center;">Waiting for provider to start...</span>
+          `;
+        }
+      }
+      else if (booking.status === 'in_progress') {
+        if (isProvider) {
+          actionsHtml = `<button class="btn-success" onclick="updateStatus('${booking.id}', 'completed')">✓ Mark as Finished</button>`;
+        } else {
+          actionsHtml = `<span style="color:var(--accent); font-weight:600;">Provider is working now...</span>`;
+        }
+      }
+      else if (booking.status === 'completed') {
+        if (isCustomer) {
+          actionsHtml = `<button class="btn-primary" onclick="openReviewModal('${booking.id}', '${booking.providerId}')">★ Leave a Review</button>`;
+        } else {
+          actionsHtml = `<span style="color:var(--success)">Job successfully completed</span>`;
+        }
+      }
+
+      // Card HTML
+      return `
+        <div class="booking-card">
+          <div class="booking-header">
+            <div>
+              <div class="service-title" id="title-${booking.id}">Loading Service Info...</div>
+              <div class="booking-meta">
+                <span>📅 ${booking.date} at ${booking.time}</span>
+                <span>${booking.rooms} Rooms • ${booking.details || 'No notes'}</span>
+                <span style="font-size:0.75rem; margin-top:4px; opacity:0.6">ID: ${booking.id}</span>
+              </div>
+            </div>
+            <span class="badge badge-${booking.status}">${booking.status.replace('_', ' ')}</span>
+          </div>
+          
+          <div class="tracker-container">
+            <div class="tracker-header">
+              <span>Status: ${label}</span>
+              <span>${percent}%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${percent}%"></div>
+            </div>
+            <div class="tracker-steps">
+              <span>Pending</span>
+              <span>Accepted</span>
+              <span>Working</span>
+              <span>Done</span>
+            </div>
+          </div>
+
+          <div class="booking-actions">
+            ${actionsHtml}
+          </div>
+          
+          <img src="" onerror="fetchServiceName('${booking.serviceId}', '${booking.id}')" style="display:none">
+        </div>
+      `;
+    }
+
+    // Helper to fetch service title
+    const serviceCache = {};
+    function fetchServiceName(serviceId, elementId) {
+      // HANDLE MOCK SERVICE
+      if (serviceId === 'mock_svc_demo') {
+        const el = document.getElementById(`title-${elementId}`);
+        if(el) el.textContent = "✨ Demo House Cleaning";
+        return;
+      }
+
+      if (serviceCache[serviceId]) {
+        document.getElementById(`title-${elementId}`).textContent = serviceCache[serviceId];
+        return;
+      }
+      db.collection('services').doc(serviceId).get().then(doc => {
+        const title = doc.exists ? doc.data().title : 'Unknown Service';
+        serviceCache[serviceId] = title;
+        const el = document.getElementById(`title-${elementId}`);
+        if(el) el.textContent = title;
+      });
+    }
+
+    // Status Updater
+    function updateStatus(bookingId, status) {
+      if (bookingId.startsWith('mock_')) {
+        alert("This is a demo booking. Status update simulated!");
+        return;
+      }
+
+      let confirmMsg = `Are you sure you want to change status to ${status.replace('_', ' ')}?`;
+      if(status === 'rejected') confirmMsg = "Are you sure you want to cancel/decline this booking?";
+      
+      if(!confirm(confirmMsg)) return;
+      
+      db.collection('bookings').doc(bookingId).update({
+        status: status,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(err => alert("Error: " + err.message));
+    }
+
+    function openChat(uid) {
+      alert("Opening chat with ID: " + uid);
+    }
+
+    // --- Review Modal Logic ---
+    const modal = document.getElementById('reviewModal');
+    const stars = document.querySelectorAll('#starContainer span');
+
+    function openReviewModal(bookingId, providerId) {
+      activeModalBookingId = bookingId;
+      activeModalProviderId = providerId;
+      currentRating = 0;
+      updateStars(0);
+      document.getElementById('reviewText').value = '';
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      activeModalBookingId = null;
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        currentRating = parseInt(star.dataset.val);
+        updateStars(currentRating);
+      });
+    });
+
+    function updateStars(val) {
+      stars.forEach(s => {
+        if(parseInt(s.dataset.val) <= val) s.classList.add('active');
+        else s.classList.remove('active');
+      });
+    }
+
+    function submitReview() {
+      if (currentRating === 0) return alert("Please select a star rating");
+      
+      if (activeModalBookingId && activeModalBookingId.startsWith('mock_')) {
+        alert("Review submitted for demo booking!");
+        closeModal();
+        return;
+      }
+
+      const text = document.getElementById('reviewText').value;
+      const btn = document.querySelector('.modal-actions .btn-primary');
+      btn.textContent = "Submitting...";
+      btn.disabled = true;
+
+      db.collection('reviews').add({
+        bookingId: activeModalBookingId,
+        providerId: activeModalProviderId,
+        reviewerId: currentUser.uid,
+        rating: currentRating,
+        comment: text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert("Review submitted! Thank you.");
+        closeModal();
+        btn.textContent = "Submit Review";
+        btn.disabled = false;
+      }).catch(err => {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+      });
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+  </script>
+</body>
+</html>

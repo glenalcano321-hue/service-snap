@@ -5,88 +5,245 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Service Intent Selection</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-
   <style>
     :root {
-      --bg:#e5e7eb; --card:#1e293b; --muted:#9aa2b1;
-      --text:#f5f5f5; --accent:#3b82f6; --ok:#22c55e; --err:#ef4444;
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card: #1e293b;
+      --card-hover: #334155;
+      --muted: #9aa2b1;
+      --text: #f5f5f5;
+      --accent: #3b82f6;
+      --ok: #22c55e;
+      --err: #ef4444;
     }
+
+    * { box-sizing: border-box; }
+
     body {
-      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:var(--bg); color:var(--text); min-height:100vh; display:grid; place-items:center;
-    }
-    .wrap {width:100%; max-width:360px; padding:24px;}
-    header{text-align:center; margin-bottom:18px;}
-    header h1{margin:0 0 6px; font-size:1.6rem; color:#111827;}
-    header p{margin:0; color:#374151;}
-    .card {
-      background:var(--card); border-radius:18px; padding:20px;
-      box-shadow:0 10px 25px rgba(0,0,0,.2);
-      text-align: center;
-    }
-    form {display: grid; gap: 12px; color: var(--text);}
-    fieldset {
-      border:none; padding:0; margin: 0;
-      text-align: left;
+      margin: 0;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
     }
-    legend {
-      font-size: 1rem; margin-bottom: 12px;
-      color: #e5e7eb;
+
+    .wrap {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeIn 0.5s ease-in-out;
     }
-    label {
-      display: flex; gap: 8px; align-items: center;
-      cursor: pointer;
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      margin: 0;
+      color: rgba(255,255,255,0.9);
       font-size: 1rem;
     }
-    input[type="radio"] {
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    form {
+      display: grid;
+      gap: 20px;
+      color: var(--text);
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+    }
+
+    legend {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
       cursor: pointer;
-      width: 18px; height: 18px;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.05);
+      margin-bottom: 12px;
     }
+
+    .radio-option:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+      transform: translateX(5px);
+    }
+
+    .radio-option input[type="radio"] {
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+    }
+
+    .radio-option input[type="radio"]:checked + label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .radio-option label {
+      cursor: pointer;
+      font-size: 1rem;
+      flex: 1;
+      user-select: none;
+    }
+
     button.primary {
-      background: var(--accent); color: #fff; border:none; border-radius: 12px;
-      padding: 10px 14px; cursor: pointer; font-weight: 600; transition: background .3s;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
-    button.primary:hover { background: #2563eb; }
+
+    button.primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+    }
+
+    button.primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .msg {
-      font-size: 0.9rem; padding: 8px 10px; border-radius: 10px; margin-top: 10px; display: none;
+      font-size: 0.9rem;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: none;
+      animation: slideIn 0.3s ease;
     }
-    .msg.ok { background: rgba(34,197,94,.1); border: 1px solid var(--ok); color: #bff6cd; display: block; }
-    .msg.err { background: rgba(239,68,68,.1); border: 1px solid var(--err); color: #ffc0c0; display: block; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.ok {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--ok);
+      color: #bff6cd;
+      display: block;
+    }
+
+    .msg.err {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--err);
+      color: #ffc0c0;
+      display: block;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Service Intent</h1>
-      <p>Please select an option to continue.</p>
+      <h1>🎯 Service Intent</h1>
+      <p>Choose how you'd like to get started</p>
     </header>
 
     <section class="card">
       <form id="intentForm" autocomplete="off">
         <fieldset>
           <legend>I want to...</legend>
-          <label>
-            <input type="radio" name="serviceIntent" value="offer" required />
-            Offer a service
-          </label>
-          <label>
-            <input type="radio" name="serviceIntent" value="find" />
-            Find a service
-          </label>
+          
+          <div class="radio-option">
+            <input type="radio" id="offer" name="serviceIntent" value="offer" required />
+            <label for="offer">🛠️ Offer a service</label>
+          </div>
+
+          <div class="radio-option">
+            <input type="radio" id="find" name="serviceIntent" value="find" />
+            <label for="find">🔍 Find a service</label>
+          </div>
         </fieldset>
-        <button class="primary" type="submit">Continue</button>
+
+        <button class="primary" type="submit" id="submitBtn">
+          Continue
+        </button>
+
         <p class="msg" id="intentMsg"></p>
       </form>
     </section>
   </div>
 
-  <script>
-    // Firebase Config
+  <!-- Firebase SDK (Modular) -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
     const firebaseConfig = {
       apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
       authDomain: "finding-service-auth.firebaseapp.com",
@@ -95,51 +252,66 @@
       messagingSenderId: "404280706761",
       appId: "1:404280706761:web:8c808b583447b133832f18"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
-    function showMsg(el, text, isErr){
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function showMsg(el, text, isErr) {
       el.textContent = text;
       el.className = 'msg ' + (isErr ? 'err' : 'ok');
+    }
+
+    function setLoading(isLoading) {
+      const btn = document.getElementById('submitBtn');
+      if (isLoading) {
+        btn.disabled = true;
+        btn.innerHTML = 'Processing... <span class="spinner"></span>';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = 'Continue';
+      }
     }
 
     document.getElementById('intentForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msg = document.getElementById('intentMsg');
-      const user = auth.currentUser;
-      const intent = e.currentTarget.serviceIntent.value; // 'offer' | 'find'
+      const intent = e.currentTarget.serviceIntent.value;
 
-      if (!user) {
-        showMsg(msg, 'Not logged in. Please log in again.', true);
-        return;
-      }
+      setLoading(true);
 
-      // Map intent to canonical role fields used by UI and Firestore Rules
-      const isProvider = intent === 'offer';
-      const patch = {
-        intent, // keep simple preference
-        userType: isProvider ? 'provider' : 'client',                 // UI/client logic
-        accountType: isProvider ? 'service_provider' : 'service_looker', // rules compatibility
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          showMsg(msg, 'Not logged in. Redirecting to login...', true);
+          setTimeout(() => window.location.href = 'index.html', 1500);
+          setLoading(false);
+          return;
+        }
 
-      try {
-        // set(..., { merge:true }) will create or update without overwriting other fields
-        await db.collection('users').doc(user.uid).set(patch, { merge: true });
-        showMsg(msg, 'Preference saved! Redirecting...', false);
+        const isProvider = intent === 'offer';
+        const patch = {
+          intent,
+          userType: isProvider ? 'provider' : 'client',
+          accountType: isProvider ? 'service_provider' : 'service_looker',
+          updatedAt: serverTimestamp()
+        };
 
-        // Route providers to listing page; lookers to feed with intent param
-        setTimeout(() => {
-          if (isProvider) {
-            window.location.href = 'add-service.html';
-          } else {
-            window.location.href = 'feed.html?intent=' + encodeURIComponent(intent);
-          }
-        }, 800);
-      } catch (err) {
-        showMsg(msg, 'Could not save choice: ' + (err.message || 'Unknown error'), true);
-      }
+        try {
+          await setDoc(doc(db, 'users', user.uid), patch, { merge: true });
+          showMsg(msg, '✅ Preference saved! Redirecting...', false);
+
+          setTimeout(() => {
+            if (isProvider) {
+              window.location.href = 'add-service.html';
+            } else {
+              window.location.href = 'feed.html?intent=' + encodeURIComponent(intent);
+            }
+          }, 1200);
+        } catch (err) {
+          showMsg(msg, '❌ Could not save: ' + (err.message || 'Unknown error'), true);
+          setLoading(false);
+        }
+      });
     });
   </script>
 </body>

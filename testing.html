@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Service Feed - Home Services</title>
+
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card: #1e293b;
+      --text: #f3f4f6;
+      --muted: #9aa2b1;
+      --accent: #3b82f6;
+      --border: #334155;
+      --success: #10b981;
+      --error: #ef4444;
+      --hover: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--hover);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Page Title */
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .page-subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.1rem;
+    }
+
+    /* Filters */
+    .filters {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .filter-select {
+      padding: 0.6rem 1rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 180px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      padding: 0.7rem 1.2rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Service Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border-color: var(--accent);
+    }
+
+    .service-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: rgba(59, 130, 246, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .service-content {
+      padding: 1.5rem;
+    }
+
+    .service-category {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent);
+      border-radius: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .service-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-description {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .service-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .service-price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .service-price-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .service-location {
+      color: var(--muted);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--card);
+      border-radius: 1rem;
+      border: 2px dashed var(--border);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Message */
+    .message {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      font-weight: 600;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid var(--success);
+      color: var(--success);
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 2px solid var(--error);
+      color: var(--error);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-title { font-size: 2rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .filter-group { flex-direction: column; align-items: stretch; }
+      .filter-select, .search-box { width: 100%; }
+      .nav-actions { flex-direction: column; width: 100%; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <a href="index.html" class="logo">🏠 Home Services</a>
+      <div class="nav-actions">
+        <button class="btn btn-primary" onclick="window.location.href='add-service.html'">+ List Service</button>
+        <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">🔍 Browse Services</h1>
+      <p class="page-subtitle">Find the perfect service provider for your needs</p>
+    </div>
+
+    <!-- Message -->
+    <div id="message" class="message"></div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Filter:</label>
+        <select id="categoryFilter" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="cleaning">🧹 Cleaning</option>
+          <option value="childcare">👶 Child Care</option>
+          <option value="eldercare">👴 Elder Care</option>
+          <option value="cooking">👩‍🍳 Cooking</option>
+          <option value="maintenance">🔧 Maintenance</option>
+          <option value="gardening">🌱 Gardening</option>
+        </select>
+        <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search services...">
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading" style="display:none;">
+      <div class="spinner"></div>
+      <p>Loading services...</p>
+    </div>
+
+    <!-- Services Grid -->
+    <div id="servicesGrid" class="services-grid"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <div class="empty-icon">📭</div>
+      <h2 class="empty-title">No Services Found</h2>
+      <p class="empty-text">Try adjusting your filters or search terms</p>
+    </div>
+  </main>
+
+  <!-- Firebase SDK (Modular) -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, collection, query, where, getDocs, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
+      authDomain: "finding-service-auth.firebaseapp.com",
+      projectId: "finding-service-auth",
+      storageBucket: "finding-service-auth.appspot.com",
+      messagingSenderId: "404280706761",
+      appId: "1:404280706761:web:8c808b583447b133832f18"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let allServices = [];
+
+    // Check Auth
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+      } else {
+        loadServices();
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = 'index.html';
+      } catch (error) {
+        showMessage('Error logging out', 'error');
+      }
+    });
+
+    // Load Services
+    async function loadServices() {
+      const loading = document.getElementById('loading');
+      const servicesGrid = document.getElementById('servicesGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      loading.style.display = 'block';
+      servicesGrid.innerHTML = '';
+      emptyState.style.display = 'none';
+
+      try {
+        const servicesQuery = query(
+          collection(db, 'services'),
+          where('status', '==', 'active'),
+          orderBy('createdAt', 'desc')
+        );
+
+        const snapshot = await getDocs(servicesQuery);
+        allServices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        displayServices(allServices);
+      } catch (error) {
+        console.error('Error loading services:', error);
+        showMessage('Failed to load services', 'error');
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Display Services
+    function displayServices(services) {
+      const servicesGrid = document.getElementById('servicesGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      if (services.length === 0) {
+        servicesGrid.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      servicesGrid.innerHTML = services.map(service => `
+        <div class="service-card">
+          <div class="service-image">
+            ${service.images && service.images[0] 
+              ? `<img src="${service.images[0]}" style="width:100%;height:100%;object-fit:cover;" alt="${service.title}">` 
+              : getCategoryIcon(service.category)}
+          </div>
+          <div class="service-content">
+            <span class="service-category">${service.category}</span>
+            <h3 class="service-title">${service.title}</h3>
+            <p class="service-description">${service.description}</p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">₱${service.dailyRate}</div>
+                <div class="service-price-label">per day</div>
+              </div>
+              <div class="service-location">📍 ${service.serviceArea}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Category Icon
+    function getCategoryIcon(category) {
+      const icons = {
+        cleaning: '🧹',
+        childcare: '👶',
+        eldercare: '👴',
+        cooking: '👩‍🍳',
+        maintenance: '🔧',
+        gardening: '🌱'
+      };
+      return icons[category] || '🏠';
+    }
+
+    // Filter Services
+    document.getElementById('categoryFilter').addEventListener('change', filterServices);
+    document.getElementById('searchBox').addEventListener('input', filterServices);
+
+    function filterServices() {
+      const category = document.getElementById('categoryFilter').value;
+      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+
+      let filtered = allServices;
+
+      if (category) {
+        filtered = filtered.filter(s => s.category === category);
+      }
+
+      if (searchTerm) {
+        filtered = filtered.filter(s => 
+          s.title.toLowerCase().includes(searchTerm) ||
+          s.description.toLowerCase().includes(searchTerm) ||
+          s.serviceArea.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      displayServices(filtered);
+    }
+
+    // Show Message
+    function showMessage(text, type) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = `message ${type}`;
+      message.style.display = 'block';
+      if (type === 'success') setTimeout(() => message.style.display = 'none', 3000);
+    }
+  </script>
+</body>
+</html>

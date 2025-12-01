@@ -6,818 +6,164 @@
   <link rel="icon" type="image/jpeg" href="logo.jpg" sizes="32x32">
   <title>ServiceSnap</title>
 
-  <!-- Firebase -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
   <style>
-    .Dropdown {
-      position: relative;
-      display: inline-block;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 110%;
-      background-color: var(--card);
-      min-width: 200px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      border: 1px solid var(--card);
-      border-radius: 12px;
-      z-index: 1000;
-      overflow: hidden;
-      animation: slideDown 0.2s ease-out;
-    }
-    .dropdown-content.show{
-      display: block;
-    }
-    .dropdown-item {
-      color: var(--text);
-      padding: 12px 16px;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: background 0.2s;
-      cursor: pointer;
-      font-size: 0.95rem;
-    }
-    .dropdown-item:hover {
-      background-color: var(--hover);
-    }
-    .text-danger {
-      color: #ef4444;
-    }
-    .text-danger:hover {
-      background-color: #fef2f2;
-    }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    :root{ 
-      --bg:#ffffff; 
-      --card:#ffffff; 
-      --text:#004242; 
-      --muted:#9aa2b1; 
-      --accent:#3b82f6; 
-      --border:#1f2937;
-      --hover:#756a6a;
-      --success:#10b981;
-    }
+    :root{ --bg:#ffffff; --card:#ffffff; --text:#004242; --muted:#9aa2b1; --accent:#3b82f6; --border:#1f2937; --hover:#756a6a; --success:#10b981; }
     *{box-sizing:border-box}
-    body{ 
-      margin:0; 
-      background:var(--bg); 
-      color:var(--text); 
-      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; 
-      min-height:100vh; 
-    }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; min-height:100vh; }
+
+    /* Dropdown */
+    .Dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; top: 110%; background-color: var(--card); min-width: 200px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; border-radius: 12px; z-index: 1000; overflow: hidden; animation: slideDown 0.2s ease-out; }
+    .dropdown-content.show{ display: block; }
+    .dropdown-item { color: var(--text); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; transition: background 0.2s; cursor: pointer; font-size: 0.95rem; }
+    .dropdown-item:hover { background-color: #f3f4f6; }
+    .text-danger { color: #ef4444; }
+    .text-danger:hover { background-color: #fef2f2; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Header */
-    .header {
-      background:var(--card);
-      border-bottom:1px solid var(--border);
-      padding:16px 24px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      position:sticky;
-      top:0;
-      z-index:100;
-    }
-    .logo { 
-      display: flex;
-      align-items: center;
-      font-weight:800; 
-      font-size:1.4rem; 
-      cursor:pointer;
-    }
-    .logo-icon {
-      width: 2rem;
-      height: 2rem;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    .search-container {
-      flex:1;
-      max-width:400px;
-      margin:0 24px;
-      position:relative;
-    }
-    .search-bar {
-      width:100%;
-      background:#ffffff;
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:12px 16px 12px 40px;
-      color:var(--text);
-      font-size:14px;
-    }
-    .search-icon {
-      position:absolute;
-      left:14px;
-      top:50%;
-      transform:translateY(-50%);
-      color:var(--muted);
-    }
-    .user-menu {
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-    .avatar { 
-      width:40px; 
-      height:40px; 
-      border-radius:50%; 
-      background:var(--accent); 
-      display:grid; 
-      place-items:center; 
-      font-weight:700; 
-      cursor:pointer;
-    }
+    .header { background:var(--card); border-bottom:1px solid #e5e7eb; padding:16px 24px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+    .logo { display: flex; align-items: center; font-weight:800; font-size:1.4rem; cursor:pointer; }
+    .logo-icon { width: 2rem; height: 2rem; vertical-align: middle; margin-right: 8px; }
+    .search-container { flex:1; max-width:400px; margin:0 24px; position:relative; }
+    .search-bar { width:100%; background:#f9fafb; border:1px solid #e5e7eb; border-radius:24px; padding:12px 16px 12px 40px; color:var(--text); font-size:14px; }
+    .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); }
+    .user-menu { display:flex; align-items:center; gap:12px; }
+    .avatar { width:40px; height:40px; border-radius:50%; background:var(--accent); display:grid; place-items:center; font-weight:700; color:white; cursor:pointer; }
 
-    /* Sidebar */
-    .layout {
-      display:flex;
-      min-height:calc(100vh - 73px);
-    }
-    .sidebar {
-      width:240px;
-      background:var(--card);
-      border-right:1px solid var(--border);
-      padding:24px 0;
-    }
-    .nav-item {
-      display:flex;
-      align-items:center;
-      padding:12px 24px;
-      color:var(--muted);
-      text-decoration:none;
-      transition:all 0.2s;
-      gap:12px;
-      cursor:pointer;
-    }
-    .nav-item:hover, .nav-item.active {
-      background:var(--hover);
-      color:var(--text);
-    }
-    .nav-icon {
-      width:20px;
-      height:20px;
-      display:grid;
-      place-items:center;
-    }
+    /* Sidebar & Layout */
+    .layout { display:flex; min-height:calc(100vh - 73px); }
+    .sidebar { width:240px; background:var(--card); border-right:1px solid #e5e7eb; padding:24px 0; }
+    .nav-item { display:flex; align-items:center; padding:12px 24px; color:var(--muted); text-decoration:none; transition:all 0.2s; gap:12px; cursor:pointer; }
+    .nav-item:hover, .nav-item.active { background:#f3f4f6; color:var(--text); }
+    .nav-icon { width:20px; height:20px; display:grid; place-items:center; }
 
     /* Main Content */
-    .main {
-      flex:1;
-      padding:24px;
-      max-width:1200px;
-    }
-    .page-title {
-      margin:0 0 24px;
-      font-size:2rem;
-      font-weight:700;
-    }
-    .page-subtitle {
-      margin:0 0 32px;
-      color:var(--muted);
-      font-size:1.1rem;
-    }
+    .main { flex:1; padding:24px; max-width:1200px; }
+    .page-title { margin:0 0 24px; font-size:2rem; font-weight:700; }
+    .page-subtitle { margin:0 0 32px; color:var(--muted); font-size:1.1rem; }
 
     /* Services Grid */
-    .services-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-      gap:20px;
-      margin-bottom:40px;
-    }
-    .service-card {
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:24px;
-      cursor:pointer;
-      transition:all 0.2s;
-      text-align:center;
-    }
-    .service-card:hover {
-      transform:translateY(-2px);
-      box-shadow:0 8px 25px rgba(0,0,0,0.3);
-      border-color:var(--accent);
-    }
-    .service-icon {
-      width:60px;
-      height:60px;
-      margin:0 auto 16px;
-      background:linear-gradient(135deg, var(--accent), #6366f1);
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      font-size:24px;
-    }
-    .service-title {
-      margin:0 0 8px;
-      font-size:1.2rem;
-      font-weight:600;
-    }
-    .service-description {
-      margin:0 0 16px;
-      color:var(--muted);
-      font-size:0.9rem;
-      line-height:1.4;
-    }
-    .service-stats {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding-top:16px;
-      border-top:1px solid var(--border);
-      font-size:0.85rem;
-    }
-    .stat-item {
-      display:flex;
-      align-items:center;
-      gap:4px;
-      color:var(--muted);
-    }
+    .services-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:40px; }
+    .service-card { background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:24px; cursor:pointer; transition:all 0.2s; text-align:center; }
+    .service-card:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(0,0,0,0.1); border-color:var(--accent); }
+    .service-icon { width:60px; height:60px; margin:0 auto 16px; background:linear-gradient(135deg, var(--accent), #6366f1); border-radius:16px; display:grid; place-items:center; font-size:24px; }
+    .service-title { margin:0 0 8px; font-size:1.2rem; font-weight:600; }
+    .service-description { margin:0 0 16px; color:var(--muted); font-size:0.9rem; line-height:1.4; }
+    .service-stats { display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid #e5e7eb; font-size:0.85rem; }
+    .stat-item { display:flex; align-items:center; gap:4px; color:var(--muted); }
 
     /* Provider Cards */
-    .provider-card {
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:20px;
-      display:flex;
-      gap:16px;
-      align-items:center;
-      margin-bottom:16px;
-      transition:all 0.2s;
-      cursor:pointer;
+    .provider-card { background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:20px; display:flex; gap:16px; align-items:center; margin-bottom:16px; transition:all 0.2s; cursor:pointer; }
+    .provider-card:hover { transform:translateY(-1px); border-color:var(--accent); box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+    .provider-avatar { width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, var(--accent), #6366f1); display:grid; place-items:center; font-weight:700; font-size:1.2rem; color:white; }
+    .provider-photo { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; }
+    .provider-info { flex:1; }
+    
+    /* UPDATED: Provider Name Alignment */
+    .provider-name { 
+      margin:0 0 4px; 
+      font-size:1.1rem; 
+      font-weight:600; 
+      display: flex; /* Flexbox for alignment */
+      align-items: center; /* Vertical center */
+      gap: 6px; /* Space between name and badge */
     }
-    .provider-card:hover {
-      transform:translateY(-1px);
-      border-color:var(--accent);
-      box-shadow:0 4px 15px rgba(0,0,0,0.2);
-    }
-    .provider-avatar {
-      width:60px;
-      height:60px;
-      border-radius:50%;
-      background:linear-gradient(135deg, var(--accent), #6366f1);
-      display:grid;
-      place-items:center;
-      font-weight:700;
-      font-size:1.2rem;
-    }
-    .provider-photo {
-      width:60px;
-      height:60px;
-      border-radius:50%;
-      object-fit:cover;
-      border:2px solid var(--border);
-    }
-    .provider-info {
-      flex:1;
-    }
-    .provider-name {
-      margin:0 0 4px;
-      font-size:1.1rem;
-      font-weight:600;
-    }
-    .verified-icon {
-      width: 2rem;
-      height: 2rem;
-      vertical-align: middle;
-      margin-left: 8px;
-    }
-    .verified {
-      width: 1.1rem;
-      height: 1.1rem;
-      vertical-align: middle;
-      margin-left: 8px;
-    }
-    .provider-details {
-      margin:0;
-      color:var(--muted);
-      font-size:0.9rem;
-      line-height:1.4;
-    }
-    .provider-rating {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:8px;
-    }
-    .provider-actions {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
+    .verified-icon { width: 1.1rem; height: 1.1rem; object-fit: contain; }
+    
+    .provider-details { margin:0; color:var(--muted); font-size:0.9rem; line-height:1.4; }
+    .provider-specialties { color: var(--accent); font-size: 0.85rem; margin-top: 4px; font-weight: 500; }
+    .provider-rating { display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .provider-actions { display:flex; flex-direction:column; gap:8px; }
 
-    /* Provider Profile Page */
-    .profile-header {
-      background:var(--card);
-      border-radius:16px;
-      padding:32px;
-      margin-bottom:24px;
-      display:flex;
-      gap:24px;
-      align-items:flex-start;
-    }
-    .profile-photo {
-      width:120px;
-      height:120px;
-      border-radius:50%;
-      object-fit:cover;
-      border:4px solid var(--accent);
-      flex-shrink:0;
-    }
-    .profile-details {
-      flex:1;
-    }
-    .profile-name {
-      margin:0 0 8px;
-      font-size:2rem;
-      font-weight:700;
-    }
-    .profile-title {
-      margin:0 0 16px;
-      color:var(--accent);
-      font-size:1.1rem;
-      font-weight:600;
-    }
-    .profile-meta {
-      display:flex;
-      gap:24px;
-      flex-wrap:wrap;
-      margin-bottom:16px;
-    }
-    .meta-item {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      color:var(--muted);
-    }
-    .profile-actions {
-      display:flex;
-      gap:12px;
-      margin-top:24px;
-    }
+    /* Profile Page */
+    .profile-header { background:var(--card); border-radius:16px; padding:32px; margin-bottom:24px; display:flex; gap:24px; align-items:flex-start; border: 1px solid #e5e7eb; }
+    .profile-photo { width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid var(--accent); flex-shrink:0; display:grid; place-items:center; font-size:2.5rem; font-weight:700; color:white; }
+    .profile-details { flex:1; }
+    .profile-name { margin:0 0 8px; font-size:2rem; font-weight:700; display: flex; align-items: center; gap: 8px; }
+    .profile-title { margin:0 0 16px; color:var(--accent); font-size:1.1rem; font-weight:600; }
+    .profile-meta { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:16px; }
+    .meta-item { display:flex; align-items:center; gap:8px; color:var(--muted); }
+    .profile-actions { display:flex; gap:12px; margin-top:24px; }
 
-    /* Profile Sections */
-    .profile-grid {
-      display:grid;
-      grid-template-columns:2fr 1fr;
-      gap:24px;
-    }
-    .profile-section {
-      background:var(--card);
-      border-radius:16px;
-      padding:24px;
-      margin-bottom:24px;
-    }
-    .section-title {
-      margin:0 0 16px;
-      font-size:1.3rem;
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .section-content {
-      color:var(--muted);
-      line-height:1.6;
-    }
+    .profile-grid { display:grid; grid-template-columns:2fr 1fr; gap:24px; }
+    .profile-section { background:var(--card); border-radius:16px; padding:24px; margin-bottom:24px; border: 1px solid #e5e7eb; }
+    .section-title { margin:0 0 16px; font-size:1.3rem; font-weight:600; display:flex; align-items:center; gap:8px; }
+    .section-content { color:var(--muted); line-height:1.6; }
 
-    /* Portfolio Gallery */
-    .portfolio-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
-      gap:12px;
-      margin-top:16px;
-    }
-    .portfolio-item {
-      aspect-ratio:1;
-      border-radius:12px;
-      background:var(--border);
-      border:1px solid var(--border);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      transition:all 0.2s;
-      overflow:hidden;
-    }
-    .portfolio-item:hover {
-      transform:scale(1.05);
-      border-color:var(--accent);
-    }
-    .portfolio-img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
+    /* Calendar Styling */
+    .calendar-wrapper { display: flex; justify-content: center; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .flatpickr-calendar { box-shadow: none !important; background: transparent !important; }
+    .calendar-legend { display: flex; gap: 16px; font-size: 0.85rem; margin-top: 10px; justify-content: center; color: var(--muted); }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.booked { background: #ef4444; }
+    .dot.available { background: #fff; border: 1px solid #ccc; }
+
+    /* Portfolio */
+    .portfolio-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-top:16px; }
+    .portfolio-item { aspect-ratio:1; border-radius:12px; background:#f3f4f6; border:1px solid #e5e7eb; display:grid; place-items:center; cursor:pointer; transition:all 0.2s; overflow:hidden; }
+    .portfolio-item:hover { transform:scale(1.05); border-color:var(--accent); }
+    .portfolio-img { width:100%; height:100%; object-fit:cover; }
 
     /* Reviews */
-    .review-item {
-      padding:16px 0;
-      border-bottom:1px solid var(--border);
-    }
-    .review-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:8px;
-    }
-    .review-author {
-      font-weight:600;
-    }
-    .review-date {
-      color:var(--muted);
-      font-size:0.85rem;
-    }
-    .review-text {
-      color:var(--muted);
-      line-height:1.5;
-    }
+    .review-item { padding:16px 0; border-bottom:1px solid #e5e7eb; }
+    .review-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .review-author { font-weight:600; }
+    .review-date { color:var(--muted); font-size:0.85rem; }
+    .review-text { color:var(--muted); line-height:1.5; }
 
-    /* Back Button */
-    .back-btn {
-      background:transparent;
-      border:1px solid var(--border);
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 16px;
-      cursor:pointer;
-      font-weight:600;
-      margin-bottom:24px;
-      transition:all 0.2s;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .back-btn:hover {
-      background:var(--hover);
-      border-color:var(--accent);
-    }
-
-    /* Buttons */
-    .see-all-container {
-      text-align:center;
-      margin:40px 0;
-    }
-    .btn {
-      background:var(--accent);
-      color:#fff;
-      border:none;
-      border-radius:12px;
-      padding:12px 24px;
-      cursor:pointer;
-      font-weight:600;
-      text-decoration:none;
-      display:inline-block;
-      transition:all 0.2s;
-    }
-    .btn:hover {
-      background:#2563eb;
-      transform:translateY(-1px);
-    }
-    .btn-outline {
-      background:transparent;
-      border:1px solid var(--border);
-      color:var(--text);
-    }
-    .btn-outline:hover {
-      background:var(--hover);
-    }
-    .btn-sm {
-      padding:8px 16px;
-      font-size:0.85rem;
-    }
-    .btn-success {
-      background:var(--success);
-    }
-    .btn-success:hover {
-      background:#059669;
-    }
+    /* General Buttons */
+    .btn { background:var(--accent); color:#fff; border:none; border-radius:12px; padding:12px 24px; cursor:pointer; font-weight:600; text-decoration:none; display:inline-block; transition:all 0.2s; }
+    .btn:hover { background:#2563eb; transform:translateY(-1px); }
+    .btn-outline { background:transparent; border:1px solid #e5e7eb; color:var(--text); }
+    .btn-outline:hover { background:#f3f4f6; }
+    .btn-sm { padding:8px 16px; font-size:0.85rem; }
+    .btn-success { background:var(--success); }
+    .back-btn { background:transparent; border:1px solid #e5e7eb; color:var(--text); border-radius:12px; padding:10px 16px; cursor:pointer; font-weight:600; margin-bottom:24px; display:inline-flex; align-items:center; gap:8px; }
+    .back-btn:hover { background:#f3f4f6; border-color:var(--accent); }
+    .see-all-container { text-align:center; margin:40px 0; }
     .hidden { display: none !important; }
 
-    /* Chat Widget Styles */
-    .chat-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    /* Chat Widget */
+    .chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+    .chat-widget { width: 90%; max-width: 500px; height: 600px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease-out; }
+    .chat-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 16px 16px 0 0; }
+    .chat-close { margin-left: auto; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+    .chat-provider-avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; color: white; }
+    .chat-provider-details h4 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    .chat-provider-details p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+    .chat-status { display: flex; align-items: center; gap: 6px; color: var(--success); font-size: 0.85rem; }
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+    .chat-message { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; }
+    .chat-message.received { background: #f3f4f6; color: var(--text); align-self: flex-start; border-bottom-left-radius: 6px; }
+    .chat-message.sent { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 6px; }
+    .chat-input-container { padding: 20px; border-top: 1px solid var(--border); background: var(--card); border-radius: 0 0 16px 16px; }
+    .chat-input-wrapper { display: flex; gap: 12px; align-items: flex-end; }
+    .chat-input { flex: 1; background: #f9fafb; border: 1px solid var(--border); border-radius: 24px; padding: 12px 16px; font-size: 0.9rem; resize: none; min-height: 44px; max-height: 120px; font-family: inherit; }
+    .chat-send-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 50%; color: white; cursor: pointer; display: grid; place-items: center; font-size: 18px; transition: all 0.2s; flex-shrink: 0; }
+    .chat-quick-replies { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .quick-reply-btn { background: #f3f4f6; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 16px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .quick-reply-btn:hover { background: var(--accent); color: white; }
 
-    .chat-widget {
-      width: 90%;
-      max-width: 500px;
-      height: 600px;
-      background: var(--card);
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: slideUp 0.3s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .chat-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--card);
-      border-radius: 16px 16px 0 0;
-    }
-
-    .chat-close {
-      margin-left: auto;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-
-    .chat-close:hover {
-      background: var(--hover);
-      color: var(--text);
-    }
-
-    .chat-provider-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-    }
-
-    .chat-provider-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .chat-provider-details h4 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .chat-provider-details p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .chat-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--success);
-      font-size: 0.85rem;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .chat-message {
-      max-width: 85%;
-      padding: 12px 16px;
-      border-radius: 18px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .chat-message.received {
-      background: var(--hover);
-      color: var(--text);
-      align-self: flex-start;
-      border-bottom-left-radius: 6px;
-    }
-
-    .chat-message.sent {
-      background: var(--accent);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 6px;
-    }
-
-    .chat-message-time {
-      font-size: 0.75rem;
-      opacity: 0.7;
-      margin-top: 4px;
-    }
-
-    .chat-typing {
-      padding: 12px 16px;
-      background: var(--hover);
-      border-radius: 18px;
-      border-bottom-left-radius: 6px;
-      max-width: 85%;
-      align-self: flex-start;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .typing-dots {
-      display: flex;
-      gap: 3px;
-    }
-
-    .typing-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--muted);
-      border-radius: 50%;
-      animation: typingBounce 1.4s infinite;
-    }
-
-    .typing-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes typingBounce {
-      0%, 60%, 100% {
-        transform: translateY(0);
-      }
-      30% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .chat-input-container {
-      padding: 20px;
-      border-top: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 0 0 16px 16px;
-    }
-
-    .chat-input-wrapper {
-      display: flex;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .chat-input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 12px 16px;
-      color: var(--text);
-      font-size: 0.9rem;
-      resize: none;
-      min-height: 44px;
-      max-height: 120px;
-      font-family: inherit;
-    }
-
-    .chat-input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    .chat-send-btn {
-      width: 44px;
-      height: 44px;
-      background: var(--accent);
-      border: none;
-      border-radius: 50%;
-      color: white;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    .chat-send-btn:hover {
-      background: #2563eb;
-      transform: scale(1.05);
-    }
-
-    .chat-send-btn:disabled {
-      background: var(--muted);
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .chat-quick-replies {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .quick-reply-btn {
-      background: var(--hover);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 16px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .quick-reply-btn:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-    }
-
-    /* Mobile Responsive */
     @media (max-width: 768px) {
       .layout { flex-direction:column; }
-      .sidebar { 
-        width:100%; 
-        border-right:none; 
-        border-bottom:1px solid var(--border);
-        padding:16px 0;
-      }
-      .nav-item { padding:8px 16px; }
-      .services-grid { 
-        grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
-        gap:16px;
-      }
-      .main { padding:16px; }
-      .search-container { margin:0 12px; }
-      .provider-card {
-        flex-direction:column;
-        text-align:center;
-      }
-      .profile-header {
-        flex-direction:column;
-        text-align:center;
-      }
-      .profile-grid {
-        grid-template-columns:1fr;
-      }
-      .profile-meta {
-        justify-content:center;
-      }
-
-      .chat-widget {
-        width: 95%;
-        height: 85vh;
-      }
-
-      .chat-messages {
-        padding: 16px;
-      }
-
-      .chat-input-container {
-        padding: 16px;
-      }
+      .sidebar { width:100%; border-right:none; border-bottom:1px solid #e5e7eb; padding:16px 0; }
+      .services-grid { grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px; }
+      .profile-grid { grid-template-columns:1fr; }
+      .chat-widget { width: 95%; height: 85vh; }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header class="header">
     <div class="logo" onclick="showHomePage()"> <img src="logo.jpg" class= "logo-icon"> ServiceSnap</div>
     <div class="search-container">
@@ -825,93 +171,59 @@
       <input type="text" class="search-bar" placeholder="Search for services..." id="searchInput">
     </div>
     <div class="user-menu">
-      <div class="dropdown">
+      <div class="Dropdown">
         <div class="avatar" id="userAvatar" onclick="toggleUserDropdown()">U</div>
-    
         <div id="userDropdownContent" class="dropdown-content">
-          <a href="#" onclick="location.href='profile.html'" class="dropdown-item">
-            <span>👤</span> My Profile
-          </a>
+          <a href="#" onclick="location.href='profile.html'" class="dropdown-item"><span>👤</span> My Profile</a>
           <hr style="margin: 0; border: 0; border-top: 1px solid var(--border);">
-          <a href="#" id="signOutBtn" class="dropdown-item text-danger">
-            <span>🚪</span> Sign out
-          </a>
+          <a href="#" id="signOutBtn" class="dropdown-item text-danger"><span>🚪</span> Sign out</a>
         </div>
       </div>
     </div>
   </header>
 
   <div class="layout">
-    <!-- Sidebar -->
     <nav class="sidebar">
       <div class="nav-item active" data-category="all" onclick="showHomePage()">
-        <div class="nav-icon">🏠</div>
-        All Services
+        <div class="nav-icon">🏠</div> All Services
       </div>
       <div class="nav-item" data-category="cleaning" onclick="filterServices('cleaning')">
-        <div class="nav-icon">🧹</div>
-        Cleaning
+        <div class="nav-icon">🧹</div> Cleaning
       </div>
       <div class="nav-item" data-category="childcare" onclick="filterServices('childcare')">
-        <div class="nav-icon">👶</div>
-        Child Care
+        <div class="nav-icon">👶</div> Child Care
       </div>
       <div class="nav-item" data-category="eldercare" onclick="filterServices('eldercare')">
-        <div class="nav-icon">👴</div>
-        Elder Care
+        <div class="nav-icon">👴</div> Elder Care
       </div>
       <div class="nav-item" data-category="cooking" onclick="filterServices('cooking')">
-        <div class="nav-icon">👩‍🍳</div>
-        Cooking
+        <div class="nav-icon">👩‍🍳</div> Cooking
       </div>
       <div class="nav-item" data-category="maintenance" onclick="filterServices('maintenance')">
-        <div class="nav-icon">🔧</div>
-        Maintenance
+        <div class="nav-icon">🔧</div> Maintenance
       </div>
       <div class="nav-item" data-category="gardening" onclick="filterServices('gardening')">
-        <div class="nav-icon">🌱</div>
-        Gardening
+        <div class="nav-icon">🌱</div> Gardening
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main" id="mainContent">
       <div id="authContent" class="hidden">
-        <!-- Home Page Content -->
         <div id="homePage">
-          <h1 class="page-title">ServiceSnap</h1>
+          <h1 class="page-title" id="pageTitle">ServiceSnap</h1>
           <p class="page-subtitle">Find trusted service providers for your home needs</p>
-
-          <!-- Services Grid -->
-          <div class="services-grid" id="servicesGrid">
-            <!-- Featured services will appear here -->
-          </div>
-
-          <!-- More Services Grid, initially hidden -->
-          <div class="services-grid hidden" id="moreServices">
-            <!-- More services in this grid! -->
-          </div>
-
-          <!-- See All Button -->
+          <div class="services-grid" id="servicesGrid"></div>
+          <div class="services-grid hidden" id="moreServices"></div>
           <div class="see-all-container">
             <button class="btn" id="seeAllBtn">See All Services</button>
           </div>
         </div>
-
-        <!-- Service Providers Page -->
-        <div id="providersPage" class="hidden">
-          <!-- Content will be dynamically populated -->
-        </div>
-
-        <!-- Provider Profile Page -->
-        <div id="profilePage" class="hidden">
-          <!-- Content will be dynamically populated -->
-        </div>
+        <div id="providersPage" class="hidden"></div>
+        <div id="profilePage" class="hidden"></div>
       </div>
     </main>
   </div>
 
-  <!-- Chat Widget -->
   <div id="chatOverlay" class="chat-overlay hidden">
     <div class="chat-widget" id="chatWidget">
       <div class="chat-header">
@@ -920,23 +232,16 @@
           <div class="chat-provider-details">
             <h4 id="chatProviderName">Provider Name</h4>
             <p id="chatProviderTitle">Service Provider</p>
-            <div class="chat-status">
-              <span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
-              <span>Online</span>
-            </div>
+            <div class="chat-status"><span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block;"></span> <span>Online</span></div>
           </div>
         </div>
         <button class="chat-close" onclick="closeChatWidget()">×</button>
       </div>
-
-      <div class="chat-messages" id="chatMessages">
-        <!-- Messages will be dynamically added here -->
-      </div>
-
+      <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-container">
         <div class="chat-quick-replies" id="quickReplies">
-          <button class="quick-reply-btn" onclick="sendQuickReply('What are your rates?')">What are your rates?</button>
-          <button class="quick-reply-btn" onclick="sendQuickReply('Are you available this weekend?')">Available this weekend?</button>
+          <button class="quick-reply-btn" onclick="sendQuickReply('What are your rates?')">Rates?</button>
+          <button class="quick-reply-btn" onclick="sendQuickReply('Available this weekend?')">Availability?</button>
           <button class="quick-reply-btn" onclick="sendQuickReply('Can you provide references?')">References?</button>
         </div>
         <div class="chat-input-wrapper">
@@ -951,17 +256,106 @@
     function toggleUserDropdown() {
       document.getElementById("userDropdownContent").classList.toggle("show");
     }
-    window.onclicck = function(event) {
+    
+    window.onclick = function(event) {
       if (!event.target.matches('.avatar')){
-        var dropdown = document.getElementsByClassName("dropdown-content");
-        for (var i = 0; i < dropdown.length; i++){
-          var openDropdown = dropdowns[i];
-          if (openDropdown.classlist.contains('show')) {
-            openDropdown.classlist.remove('show');
-          }
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++){
+          if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
         }
       }
     }
+
+    // --- MOCK SCHEDULE DATA ---
+    const mockProviderSchedules = {
+      1: ["2025-11-28", "2025-11-29", "2025-12-01"], // Maria
+      2: ["2025-11-30", "2025-12-02"], // Ana
+      3: ["2025-12-05", "2025-12-06", "2025-12-07"], // Carmen
+      4: ["2025-11-28", "2025-12-01"], // Jessica
+    };
+
+    // --- FULL MOCK DATA ---
+    const createPlaceholder = (text, color = '#e5e7eb') => `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='${encodeURIComponent(color)}'/%3E%3Ctext x='150' y='150' text-anchor='middle' fill='%236b7280' font-size='16' font-family='Arial'%3E${encodeURIComponent(text)}%3C/text%3E%3C/svg%3E`;
+
+    const serviceProviders = {
+      cleaning: [
+        {
+          id: 1, name: "Maria Santos", title: "Professional House Cleaner", location: "Barangay Poblacion, Argao", hourlyRate: "₱350/hour", rating: 4.9, reviews: 127, verified: true,
+          about: "Hi! I'm Maria, a dedicated house cleaner with 5 years of experience. I take pride in transforming homes into spotless spaces.",
+          specialties: ["Deep cleaning", "Move-in/out cleaning"],
+          services: ["Regular house cleaning", "Deep cleaning services", "Post-construction cleanup"],
+          portfolio: [createPlaceholder("Before & After", "#ddd6fe"), createPlaceholder("Kitchen", "#dcfce7"), createPlaceholder("Living Room", "#fef3c7")],
+          reviews_detail: [{ author: "Jennifer L.", rating: 5, date: "2 weeks ago", text: "Maria is absolutely fantastic!" }, { author: "Robert K.", rating: 5, date: "1 month ago", text: "Always on time and thorough." }]
+        },
+        {
+          id: 2, name: "Ana Rodriguez", title: "Residential Cleaning Specialist", location: "Barangay Looc, Argao", hourlyRate: "₱300/hour", rating: 4.7, reviews: 89, verified: true,
+          about: "Professional cleaner specializing in apartment and small office spaces.",
+          specialties: ["Apartment cleaning", "Office cleaning"],
+          services: ["Apartment cleaning", "Weekly maintenance"],
+          portfolio: [createPlaceholder("Studio Apt", "#f3e8ff"), createPlaceholder("Office Space", "#ecfdf5")],
+          reviews_detail: [{ author: "Mike T.", rating: 5, date: "1 week ago", text: "Efficient and knows exactly what needs attention." }]
+        },
+        {
+          id: 3, name: "Carmen dela Cruz", title: "Eco-Friendly Cleaning Expert", location: "Barangay Tulic, Argao", hourlyRate: "₱400/hour", rating: 4.8, reviews: 156, verified: true,
+          about: "Specializing in eco-friendly and allergy-safe cleaning solutions. Perfect for families with children or pets.",
+          specialties: ["Green cleaning", "Pet-friendly"],
+          services: ["Eco-friendly cleaning", "Allergy-safe cleaning"],
+          portfolio: [createPlaceholder("Eco Products", "#dcfce7"), createPlaceholder("Pet Safe", "#fef3c7")],
+          reviews_detail: [{ author: "Amanda S.", rating: 5, date: "5 days ago", text: "Carmen is amazing! Natural cleaning methods made such a difference." }]
+        }
+      ],
+      childcare: [
+        {
+          id: 4, name: "Jessica Reyes", title: "Professional Nanny", location: "Taguig City", hourlyRate: "₱250/hour", rating: 4.9, reviews: 95, verified: true,
+          about: "Passionate childcare provider with 6 years of experience. I believe in nurturing each child's unique personality.",
+          specialties: ["Infant care", "Toddler development"],
+          services: ["Infant care", "Toddler supervision", "Light tutoring"],
+          portfolio: [createPlaceholder("Play Time", "#fef3c7"), createPlaceholder("Learning", "#dbeafe")],
+          reviews_detail: [{ author: "Lisa P.", rating: 5, date: "3 days ago", text: "She's incredibly patient and creative." }]
+        }
+      ],
+      eldercare: [
+        {
+          id: 6, name: "Grace Martinez", title: "Senior Care Companion", location: "Manila", hourlyRate: "₱280/hour", rating: 4.9, reviews: 78, verified: true,
+          about: "Dedicated senior care professional focusing on dignity and independence for seniors.",
+          specialties: ["Companionship", "Medication reminders"],
+          services: ["Companionship", "Medication reminders", "Light housekeeping"],
+          portfolio: [createPlaceholder("Companion Care", "#f0f9ff"), createPlaceholder("Daily Support", "#fffbeb")],
+          reviews_detail: [{ author: "Roberto F.", rating: 5, date: "4 days ago", text: "My mother looks forward to her visits." }]
+        }
+      ],
+      cooking: [
+        {
+          id: 7, name: "Chef Marco Silva", title: "Personal Chef", location: "BGC", hourlyRate: "₱500/hour", rating: 4.7, reviews: 65, verified: true,
+          about: "Professional chef specializing in healthy, delicious meals tailored to your dietary needs.",
+          specialties: ["Healthy meals", "Special diets"],
+          services: ["Personal chef services", "Weekly meal prep"],
+          portfolio: [createPlaceholder("Filipino Dishes", "#fef3c7"), createPlaceholder("Healthy Meals", "#dcfce7")],
+          reviews_detail: [{ author: "Elena K.", rating: 5, date: "1 week ago", text: "Every dish was perfect!" }]
+        }
+      ],
+      maintenance: [
+        {
+          id: 8, name: "Roberto Santos", title: "Home Maintenance Expert", location: "Quezon City", hourlyRate: "₱450/hour", rating: 4.6, reviews: 143, verified: true,
+          about: "Experienced maintenance professional handling repairs with quality workmanship.",
+          specialties: ["Electrical", "Plumbing"],
+          services: ["Electrical repairs", "Plumbing services", "General repairs"],
+          portfolio: [createPlaceholder("Electrical Work", "#fef3c7"), createPlaceholder("Plumbing", "#dbeafe")],
+          reviews_detail: [{ author: "Carlos D.", rating: 5, date: "3 days ago", text: "Fixed our electrical issues quickly." }]
+        }
+      ],
+      gardening: [
+        {
+          id: 10, name: "Antonio Verde", title: "Landscape Specialist", location: "Alabang", hourlyRate: "₱320/hour", rating: 4.4, reviews: 87, verified: true,
+          about: "Professional landscaper creating beautiful, sustainable gardens.",
+          specialties: ["Landscaping", "Plant care"],
+          services: ["Garden design", "Plant care", "Lawn care"],
+          portfolio: [createPlaceholder("Garden Design", "#dcfce7"), createPlaceholder("Landscaping", "#f0fdf4")],
+          reviews_detail: [{ author: "Sandra L.", rating: 5, date: "2 weeks ago", text: "Transformed our backyard." }]
+        }
+      ]
+    };
+
     // Firebase init
     const firebaseConfig = {
       apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
@@ -975,519 +369,18 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Service categories data
     const featuredCategories = [
-      {
-        id: 'cleaning',
-        title: 'House Cleaning',
-        description: 'Professional cleaning services for your home',
-        icon: '🧹',
-        providers: 156,
-        avgRating: 4.8,
-        category: 'cleaning'
-      },
-      {
-        id: 'childcare',
-        title: 'Child Care',
-        description: 'Trusted nannies and babysitters',
-        icon: '👶',
-        providers: 89,
-        avgRating: 4.9,
-        category: 'childcare'
-      },
-      {
-        id: 'eldercare',
-        title: 'Elder Care',
-        description: 'Compassionate care for seniors',
-        icon: '👴',
-        providers: 67,
-        avgRating: 4.7,
-        category: 'eldercare'
-      }
+      { id: 'cleaning', title: 'House Cleaning', description: 'Professional cleaning services', icon: '🧹', providers: 156, avgRating: 4.8, category: 'cleaning' },
+      { id: 'childcare', title: 'Child Care', description: 'Trusted nannies', icon: '👶', providers: 89, avgRating: 4.9, category: 'childcare' },
+      { id: 'eldercare', title: 'Elder Care', description: 'Compassionate care', icon: '👴', providers: 67, avgRating: 4.7, category: 'eldercare' }
     ];
-
-    // More categories
     const moreCategories = [
-      {
-        id: 'cooking',
-        title: 'Personal Chef',
-        description: 'Home cooking and meal preparation',
-        icon: '👩‍🍳',
-        providers: 43,
-        avgRating: 4.6,
-        category: 'cooking'
-      },
-      {
-        id: 'maintenance',
-        title: 'Home Maintenance',
-        description: 'Repairs and maintenance services',
-        icon: '🔧',
-        providers: 124,
-        avgRating: 4.5,
-        category: 'maintenance'
-      },
-      {
-        id: 'gardening',
-        title: 'Garden Care',
-        description: 'Landscaping and garden maintenance',
-        icon: '🌱',
-        providers: 78,
-        avgRating: 4.4,
-        category: 'gardening'
-      },
-      {
-        id: 'handyman',
-        title: 'Handyman',
-        description: 'All-around repair experts for your home',
-        icon: '🛠️',
-        providers: 52,
-        avgRating: 4.7,
-        category: 'maintenance'
-      }
+      { id: 'cooking', title: 'Personal Chef', description: 'Home cooking', icon: '👩‍🍳', providers: 43, avgRating: 4.6, category: 'cooking' },
+      { id: 'maintenance', title: 'Home Maintenance', description: 'Repairs', icon: '🔧', providers: 124, avgRating: 4.5, category: 'maintenance' },
+      { id: 'gardening', title: 'Garden Care', description: 'Landscaping', icon: '🌱', providers: 78, avgRating: 4.4, category: 'gardening' }
     ];
 
-    // Simple SVG placeholder generator
-    const createPlaceholder = (text, color = '#e5e7eb') => {
-      return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect width='300' height='300' fill='${encodeURIComponent(color)}'/%3E%3Ctext x='150' y='150' text-anchor='middle' fill='%236b7280' font-size='16' font-family='Arial'%3E${encodeURIComponent(text)}%3C/text%3E%3C/svg%3E`;
-    };
-
-    // Enhanced mock service providers data with simple graphics
-    const serviceProviders = {
-      cleaning: [
-        {
-          id: 1,
-          name: "Maria Santos",
-          title: "Professional House Cleaner",
-          cellphone: "09154381234",
-          email: "maria.santos@email.com",
-          location: "Barangay Poblacion, Argao, Cebu",
-          landline: "032-412-3456",
-          address: "Barangay Poblacion, Argao, Cebu",
-          socialMedia: {
-            facebook: "fb.com/mariasantos.cleaner",
-            viber: "09XXXXXXXXX",
-          },
-          photo: null,
-          rating: 4.9,
-          reviews: 127,
-          experience: "5 years experience",
-          specialties: ["Deep cleaning", "Regular maintenance", "Move-in/out cleaning"],
-          hourlyRate: "₱350/hour",
-          joinDate: "March 2019",
-          verified: true,
-          about: "Hi! I'm Maria, a dedicated house cleaner with 5 years of experience in providing top-quality cleaning services. I take pride in transforming homes into spotless, comfortable spaces for families to enjoy. My attention to detail and reliable service has earned me the trust of over 100 satisfied families in Metro Manila.",
-          services: [
-            "Regular house cleaning",
-            "Deep cleaning services", 
-            "Post-construction cleanup",
-            "Move-in/move-out cleaning",
-            "Window and glass cleaning",
-            "Kitchen and bathroom sanitization"
-          ],
-          portfolio: [
-            createPlaceholder("Before & After", "#ddd6fe"),
-            createPlaceholder("Kitchen Clean", "#dcfce7"),
-            createPlaceholder("Living Room", "#fef3c7"),
-            createPlaceholder("Bathroom", "#dbeafe")
-          ],
-          reviews_detail: [
-            {
-              author: "Jennifer L.",
-              rating: 5,
-              date: "2 weeks ago",
-              text: "Maria is absolutely fantastic! She cleaned our 3-bedroom condo and it looks brand new. Very professional and trustworthy. Highly recommended!"
-            },
-            {
-              author: "Robert K.",
-              date: "1 month ago",
-              rating: 5,
-              text: "Been using Maria's services for 6 months now. Always on time, thorough, and leaves our home sparkling clean. Great value for money."
-            },
-            {
-              author: "Sarah M.",
-              date: "2 months ago", 
-              rating: 4,
-              text: "Good service overall. Maria is reliable and does quality work. Only minor issue was running a bit late once, but she communicated well."
-            }
-          ],
-          availability: "Mon-Sat, 8 AM - 6 PM",
-          languages: ["English", "Filipino", "Tagalog"]
-        },
-        {
-          id: 2,
-          name: "Ana Rodriguez",
-          title: "Residential Cleaning Specialist",
-          cellphone: "09XXXXXXXXX",
-          email: "ana.rodriguez@gmail.com",
-          location: "Barangay Looc, Poblacion, Argao, Cebu",
-          landline: "XXX-XXXX",
-          adrress: "Barangay Looc, Poblacion, Argao, Cebu",
-          photo: null,
-          rating: 4.7,
-          reviews: 89,
-          experience: "3 years experience",
-          specialties: ["Apartment cleaning", "Office cleaning"],
-          hourlyRate: "₱300/hour",
-          joinDate: "January 2021",
-          verified: true,
-          about: "Professional cleaner specializing in apartment and small office spaces. I understand the unique needs of urban living and provide efficient, thorough cleaning services that fit busy schedules.",
-          services: [
-            "Apartment cleaning",
-            "Small office cleaning",
-            "Weekly maintenance", 
-            "One-time deep clean",
-            "Eco-friendly cleaning options"
-          ],
-          portfolio: [
-            createPlaceholder("Studio Apt", "#f3e8ff"),
-            createPlaceholder("Office Space", "#ecfdf5")
-          ],
-          reviews_detail: [
-            {
-              author: "Mike T.",
-              rating: 5,
-              date: "1 week ago", 
-              text: "Ana cleaned our small apartment perfectly. She's efficient and knows exactly what needs attention. Will book again!"
-            }
-          ],
-          availability: "Tue-Sun, 9 AM - 7 PM",
-          languages: ["English", "Filipino"]
-        },
-        {
-          id: 3,
-          name: "Carmen dela Cruz",
-          title: "Eco-Friendly Cleaning Expert",
-          photo: null,
-          cellphone: "09XXXXXXXXX",
-          email: "carmen.delacruz@gmail.com",
-          rating: 4.8,
-          reviews: 156,
-          experience: "7 years experience",
-          location: "Barangay Tulic, Argao, Cebu",
-          specialties: ["Green cleaning", "Allergy-safe cleaning", "Pet-friendly"],
-          hourlyRate: "₱400/hour",
-          joinDate: "August 2017",
-          verified: true,
-          about: "Specializing in eco-friendly and allergy-safe cleaning solutions. Perfect for families with children, pets, or anyone sensitive to harsh chemicals. I use only natural, non-toxic products that are safe and effective.",
-          services: [
-            "Eco-friendly house cleaning",
-            "Allergy-safe cleaning",
-            "Pet-friendly cleaning",
-            "Natural product cleaning",
-            "Chemical-free sanitization",
-            "Green deep cleaning"
-          ],
-          portfolio: [
-            createPlaceholder("Eco Products", "#dcfce7"),
-            createPlaceholder("Pet Safe", "#fef3c7"),
-            createPlaceholder("Family Home", "#dbeafe"),
-            createPlaceholder("Green Clean", "#f0fdf4")
-          ],
-          reviews_detail: [
-            {
-              author: "Amanda S.",
-              rating: 5,
-              date: "5 days ago",
-              text: "Carmen is amazing! My daughter has severe allergies and Carmen's natural cleaning methods have made such a difference. Our home is spotless and safe."
-            },
-            {
-              author: "Carlos M.",
-              rating: 5,
-              date: "2 weeks ago",
-              text: "We have 3 cats and Carmen knows exactly how to keep our home clean without using anything harmful to our pets. Highly professional!"
-            }
-          ],
-          availability: "Mon-Sat, 7 AM - 5 PM",
-          languages: ["English", "Filipino", "Tagalog"]
-        }
-      ],
-      childcare: [
-        {
-          id: 4,
-          name: "Jessica Reyes",
-          title: "Professional Nanny & Child Care Provider",
-          photo: null,
-          rating: 4.9,
-          reviews: 95,
-          experience: "6 years experience",
-          location: "Taguig City",
-          specialties: ["Infant care", "Toddler development", "Light tutoring"],
-          hourlyRate: "₱250/hour",
-          joinDate: "June 2018",
-          verified: true,
-          about: "Passionate childcare provider with 6 years of experience caring for children from infants to school age. I believe in nurturing each child's unique personality while ensuring their safety, development, and happiness.",
-          services: [
-            "Infant care (0-12 months)",
-            "Toddler supervision",
-            "School pickup/dropoff",
-            "Light tutoring and homework help",
-            "Meal preparation for children",
-            "Educational activities and play"
-          ],
-          portfolio: [
-            createPlaceholder("Play Time", "#fef3c7"),
-            createPlaceholder("Learning", "#dbeafe")
-          ],
-          reviews_detail: [
-            {
-              author: "Lisa P.",
-              rating: 5,
-              date: "3 days ago",
-              text: "Jessica has been caring for our 2-year-old for 8 months now. She's incredibly patient, creative, and our daughter absolutely loves her. Couldn't ask for better!"
-            },
-            {
-              author: "David C.",
-              rating: 5,
-              date: "2 weeks ago",
-              text: "Professional, reliable, and genuinely cares about the children. Jessica helped our twin boys with their transition to preschool. Highly recommended."
-            }
-          ],
-          availability: "Mon-Fri, 7 AM - 8 PM",
-          languages: ["English", "Filipino", "Basic Spanish"]
-        },
-        {
-          id: 5,
-          name: "Patricia Lim",
-          title: "Certified Childcare Specialist",
-          photo: null,
-          rating: 4.8,
-          reviews: 112,
-          experience: "4 years experience",
-          location: "Makati City",
-          specialties: ["Newborn care", "Special needs", "Overnight care"],
-          hourlyRate: "₱300/hour",
-          joinDate: "February 2020",
-          verified: true,
-          about: "Certified childcare professional with specialized training in newborn care and special needs support. I provide compassionate, professional care that gives parents peace of mind.",
-          services: [
-            "Newborn care and support",
-            "Special needs childcare",
-            "Overnight care services",
-            "Developmental activities",
-            "Basic first aid",
-            "Flexible scheduling"
-          ],
-          portfolio: [
-            createPlaceholder("Newborn Care", "#fce7f3"),
-            createPlaceholder("Special Needs", "#e0f2fe"),
-            createPlaceholder("Development", "#ecfdf5")
-          ],
-          reviews_detail: [
-            {
-              author: "Michelle R.",
-              rating: 5,
-              date: "1 week ago",
-              text: "Patricia helped us with our premature baby. Her expertise and gentle care made all the difference during those challenging first months."
-            }
-          ],
-          availability: "24/7 with advance booking",
-          languages: ["English", "Filipino", "Mandarin"]
-        }
-      ],
-      eldercare: [
-        {
-          id: 6,
-          name: "Grace Martinez",
-          title: "Senior Care Companion",
-          photo: null,
-          rating: 4.9,
-          reviews: 78,
-          experience: "8 years experience",
-          location: "Manila",
-          specialties: ["Companionship", "Medication reminders", "Light housekeeping"],
-          hourlyRate: "₱280/hour",
-          joinDate: "September 2016",
-          verified: true,
-          about: "Dedicated senior care professional with 8 years of experience providing compassionate care and companionship to elderly clients. I focus on maintaining dignity, independence, and quality of life for seniors.",
-          services: [
-            "Companionship and conversation",
-            "Medication reminders",
-            "Light housekeeping",
-            "Meal preparation",
-            "Transportation to appointments",
-            "Activity assistance"
-          ],
-          portfolio: [
-            createPlaceholder("Companion Care", "#f0f9ff"),
-            createPlaceholder("Daily Support", "#fffbeb"),
-            createPlaceholder("Activities", "#f0fdf4")
-          ],
-          reviews_detail: [
-            {
-              author: "Roberto F.",
-              rating: 5,
-              date: "4 days ago",
-              text: "Grace has been caring for my 85-year-old mother for over a year. She's not just professional but truly caring. Mom looks forward to her visits."
-            }
-          ],
-          availability: "Mon-Sun, 8 AM - 6 PM",
-          languages: ["English", "Filipino", "Tagalog", "Spanish"]
-        }
-      ],
-      cooking: [
-        {
-          id: 7,
-          name: "Chef Marco Silva",
-          title: "Personal Chef & Meal Prep Specialist",
-          photo: null,
-          rating: 4.7,
-          reviews: 65,
-          experience: "10 years experience",
-          location: "Bonifacio Global City",
-          specialties: ["Filipino cuisine", "Healthy meals", "Special diets"],
-          hourlyRate: "₱500/hour",
-          joinDate: "May 2019",
-          verified: true,
-          about: "Professional chef with 10 years of culinary experience. I specialize in creating delicious, healthy meals tailored to your preferences and dietary needs. From daily meal prep to special occasion dinners.",
-          services: [
-            "Personal chef services",
-            "Weekly meal preparation",
-            "Special occasion cooking",
-            "Dietary restriction meals",
-            "Cooking lessons",
-            "Menu planning"
-          ],
-          portfolio: [
-            createPlaceholder("Filipino Dishes", "#fef3c7"),
-            createPlaceholder("Healthy Meals", "#dcfce7"),
-            createPlaceholder("Special Events", "#fce7f3"),
-            createPlaceholder("Meal Prep", "#e0f2fe")
-          ],
-          reviews_detail: [
-            {
-              author: "Elena K.",
-              rating: 5,
-              date: "1 week ago",
-              text: "Chef Marco prepared a fantastic dinner for our anniversary. Every dish was perfect! His attention to detail and flavor combinations are exceptional."
-            }
-          ],
-          availability: "Tue-Sun, 10 AM - 8 PM",
-          languages: ["English", "Filipino", "Italian"]
-        }
-      ],
-      maintenance: [
-        {
-          id: 8,
-          name: "Roberto Santos",
-          title: "Home Maintenance Expert",
-          photo: null,
-          rating: 4.6,
-          reviews: 143,
-          experience: "12 years experience",
-          location: "Quezon City",
-          specialties: ["Electrical", "Plumbing", "General repairs"],
-          hourlyRate: "₱450/hour",
-          joinDate: "March 2015",
-          verified: true,
-          about: "Experienced maintenance professional with over 12 years in home repairs and improvements. I handle everything from minor fixes to major renovations with quality workmanship and fair pricing.",
-          services: [
-            "Electrical repairs and installation",
-            "Plumbing services",
-            "General home repairs",
-            "Appliance maintenance",
-            "Painting and touch-ups",
-            "Emergency repairs"
-          ],
-          portfolio: [
-            createPlaceholder("Electrical Work", "#fef3c7"),
-            createPlaceholder("Plumbing", "#dbeafe"),
-            createPlaceholder("Repairs", "#f3e8ff"),
-            createPlaceholder("Maintenance", "#ecfdf5")
-          ],
-          reviews_detail: [
-            {
-              author: "Carlos D.",
-              rating: 5,
-              date: "3 days ago",
-              text: "Roberto fixed our electrical issues quickly and professionally. He explained everything clearly and the pricing was very reasonable."
-            }
-          ],
-          availability: "Mon-Sat, 7 AM - 6 PM",
-          languages: ["English", "Filipino", "Tagalog"]
-        },
-        {
-          id: 9,
-          name: "Jose Mendoza",
-          title: "Handyman & General Contractor",
-          photo: null,
-          rating: 4.5,
-          reviews: 98,
-          experience: "9 years experience",
-          location: "Pasay City",
-          specialties: ["Carpentry", "Tile work", "Home improvements"],
-          hourlyRate: "₱400/hour",
-          joinDate: "July 2018",
-          verified: true,
-          about: "Skilled handyman and contractor specializing in carpentry, tile work, and home improvements. I take pride in quality craftsmanship and completing projects on time and within budget.",
-          services: [
-            "Carpentry and woodwork",
-            "Tile installation and repair",
-            "Home improvements",
-            "Furniture assembly",
-            "Door and window installation",
-            "Custom built-ins"
-          ],
-          portfolio: [
-            createPlaceholder("Carpentry", "#fef3c7"),
-            createPlaceholder("Tile Work", "#e0f2fe"),
-            createPlaceholder("Improvements", "#dcfce7")
-          ],
-          reviews_detail: [
-            {
-              author: "Maria T.",
-              rating: 4,
-              date: "1 week ago",
-              text: "Jose did excellent tile work in our bathroom. Very skilled and professional. Only minor issue was project took a bit longer than expected."
-            }
-          ],
-          availability: "Mon-Fri, 8 AM - 5 PM",
-          languages: ["English", "Filipino"]
-        }
-      ],
-      gardening: [
-        {
-          id: 10,
-          name: "Antonio Verde",
-          title: "Landscape & Garden Specialist",
-          photo: null,
-          rating: 4.4,
-          reviews: 87,
-          experience: "6 years experience",
-          location: "Alabang",
-          specialties: ["Landscaping", "Plant care", "Garden design"],
-          hourlyRate: "₱320/hour",
-          joinDate: "April 2020",
-          verified: true,
-          about: "Professional landscaper with 6 years of experience in garden design, plant care, and outdoor space transformation. I help create beautiful, sustainable gardens that thrive in our tropical climate.",
-          services: [
-            "Garden design and landscaping",
-            "Plant care and maintenance",
-            "Lawn care services",
-            "Tree trimming and pruning",
-            "Garden consultation",
-            "Seasonal planting"
-          ],
-          portfolio: [
-            createPlaceholder("Garden Design", "#dcfce7"),
-            createPlaceholder("Landscaping", "#f0fdf4"),
-            createPlaceholder("Plant Care", "#fef3c7"),
-            createPlaceholder("Maintenance", "#ecfdf5")
-          ],
-          reviews_detail: [
-            {
-              author: "Sandra L.",
-              rating: 5,
-              date: "2 weeks ago",
-              text: "Antonio transformed our backyard into a beautiful garden oasis. His knowledge of plants and design sense is excellent. Very happy with the results!"
-            }
-          ],
-          availability: "Mon-Sat, 6 AM - 4 PM",
-          languages: ["English", "Filipino", "Tagalog"]
-        }
-      ]
-    };
-
-    // DOM elements
+    // DOM Elements
     const authContent = document.getElementById('authContent');
     const homePage = document.getElementById('homePage');
     const providersPage = document.getElementById('providersPage');
@@ -1499,327 +392,210 @@
     const signOutBtn = document.getElementById('signOutBtn');
     const navItems = document.querySelectorAll('.nav-item');
     const seeAllBtn = document.getElementById('seeAllBtn');
+    const pageTitle = document.getElementById('pageTitle');
 
-    // Chat elements
+    // Chat Elements
     const chatOverlay = document.getElementById('chatOverlay');
-    const chatWidget = document.getElementById('chatWidget');
-    const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
-    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatMessages = document.getElementById('chatMessages');
     const chatProviderAvatar = document.getElementById('chatProviderAvatar');
     const chatProviderName = document.getElementById('chatProviderName');
     const chatProviderTitle = document.getElementById('chatProviderTitle');
-
+    
     let currentCategory = 'all';
     let currentUser = null;
     let showingAll = false;
-    let currentPage = 'home';
     let currentServiceId = null;
     let currentChatProvider = null;
-    let messageCount = 0;
 
-    // Helper functions
+    // --- MAIN FUNCTIONS ---
+    function toggleUserDropdown() { document.getElementById("userDropdownContent").classList.toggle("show"); }
+    window.onclick = function(event) {
+      if (!event.target.matches('.avatar')){
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++){
+          if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+        }
+      }
+    }
+
     const initials = (name = '') => name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase() || '??';
     const stars = (rating) => '⭐'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '⭐' : '');
-
-    // Generate random background colors for avatars
-    const avatarColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
     const getAvatarColor = (name) => {
-      const index = name.length % avatarColors.length;
-      return avatarColors[index];
+      const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+      return colors[name.length % colors.length];
     };
 
-    // Chat functionality
-    function openChatWidget(serviceId, providerId) {
-      const providers = serviceProviders[serviceId] || [];
-      const provider = providers.find(p => p.id === providerId);
+    function showHomePage() {
+      homePage.classList.remove('hidden');
+      providersPage.classList.add('hidden');
+      profilePage.classList.add('hidden');
       
-      if (!provider) {
-        alert('Provider not found');
-        return;
-      }
-
-      currentChatProvider = provider;
-      const bgColor = getAvatarColor(provider.name);
-
-      // Set provider info in chat header
-      chatProviderAvatar.style.background = bgColor;
-      chatProviderAvatar.textContent = initials(provider.name);
-      chatProviderName.textContent = provider.name;
-      chatProviderTitle.textContent = provider.title;
-
-      // Clear previous messages and welcome message
-      chatMessages.innerHTML = '';
-      addMessage('received', `Hello! I'm ${provider.name}. How can I help you today?`, true);
-
-      // Show chat widget
-      chatOverlay.classList.remove('hidden');
-      chatInput.focus();
-    }
-
-    function closeChatWidget() {
-      chatOverlay.classList.add('hidden');
-      currentChatProvider = null;
-    }
-
-    function addMessage(type, text, isInstant = false) {
-      const messageEl = document.createElement('div');
-      messageEl.className = `chat-message ${type}`;
+      // Reset sidebar active state
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.dataset.category === 'all');
+      });
       
-      const now = new Date();
-      const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      
-      messageEl.innerHTML = `
-        <div>${text}</div>
-        <div class="chat-message-time">${timeString}</div>
-      `;
-
-      if (isInstant) {
-        chatMessages.appendChild(messageEl);
-      } else {
-        // Add typing indicator first
-        addTypingIndicator();
-        
-        setTimeout(() => {
-          removeTypingIndicator();
-          chatMessages.appendChild(messageEl);
-          scrollToBottom();
-        }, 1000 + Math.random() * 2000); 
-      }
-      
-      scrollToBottom();
+      pageTitle.textContent = "ServiceSnap";
+      renderFeaturedServices();
+      renderMoreServices();
+      moreServicesGrid.classList.add('hidden');
+      seeAllBtn.classList.remove('hidden');
+      seeAllBtn.textContent = "See All Services";
+      showingAll = false;
     }
 
-    function addTypingIndicator() {
-      const existingTyping = document.querySelector('.chat-typing');
-      if (existingTyping) return;
+    function renderFeaturedServices() { servicesGrid.innerHTML = featuredCategories.map(s => renderServiceCard(s)).join(''); }
+    function renderMoreServices() { moreServicesGrid.innerHTML = moreCategories.map(s => renderServiceCard(s)).join(''); }
 
-      const typingEl = document.createElement('div');
-      typingEl.className = 'chat-typing';
-      typingEl.innerHTML = `
-        ${currentChatProvider?.name || 'Provider'} is typing
-        <div class="typing-dots">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        </div>
-      `;
-      
-      chatMessages.appendChild(typingEl);
-      scrollToBottom();
-    }
-
-    function removeTypingIndicator() {
-      const typingEl = document.querySelector('.chat-typing');
-      if (typingEl) {
-        typingEl.remove();
-      }
-    }
-
-    function scrollToBottom() {
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function sendMessage() {
-      const message = chatInput.value.trim();
-      if (!message) return;
-
-      // Add user message
-      addMessage('sent', message, true);
-      chatInput.value = '';
-      
-      // Auto-resize textarea
-      chatInput.style.height = 'auto';
-
-      // Generate provider response
-      generateProviderResponse(message);
-    }
-
-    function sendQuickReply(message) {
-      addMessage('sent', message, true);
-      generateProviderResponse(message);
-    }
-
-    function generateProviderResponse(userMessage) {
-      let response = '';
-      const lowerMessage = userMessage.toLowerCase();
-
-      if (lowerMessage.includes('rate') || lowerMessage.includes('cost') || lowerMessage.includes('price')) {
-        response = `My rate is ${currentChatProvider?.hourlyRate || '₱300/hour'}. This includes all basic supplies and equipment. For special requests or extended services, we can discuss additional costs.`;
-      } else if (lowerMessage.includes('available') || lowerMessage.includes('weekend') || lowerMessage.includes('schedule')) {
-        response = `I'm generally available ${currentChatProvider?.availability || 'Mon-Sat, 9 AM - 6 PM'}. For weekends or specific dates, please let me know your preferred time and I'll check my schedule.`;
-      } else if (lowerMessage.includes('reference') || lowerMessage.includes('review')) {
-        response = `Absolutely! I have ${currentChatProvider?.reviews || '50+'} verified reviews with an average rating of ${currentChatProvider?.rating || '4.8'} stars. I can also provide references from recent clients upon request.`;
-      } else if (lowerMessage.includes('experience') || lowerMessage.includes('how long')) {
-        response = `I have ${currentChatProvider?.experience || '5+ years of experience'} in this field. I've been providing quality services since ${currentChatProvider?.joinDate || '2018'} and have built a strong reputation in the community.`;
-      } else if (lowerMessage.includes('book') || lowerMessage.includes('hire') || lowerMessage.includes('appointment')) {
-        response = `Great! I'd be happy to work with you. To book my services, please let me know your preferred date, time, and any specific requirements. I'll confirm availability within 2 hours.`;
-      } else if (lowerMessage.includes('location') || lowerMessage.includes('area') || lowerMessage.includes('where')) {
-        response = `I'm based in ${currentChatProvider?.location || 'Metro Manila'} and provide services in the surrounding areas. There may be additional travel charges for locations outside my regular service area.`;
-      } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('good')) {
-        response = `Hello! Thank you for reaching out. I'm excited to help you with your ${currentServiceId || 'service'} needs. What can I assist you with today?`;
-      } else {
-        // Generic responses
-        const responses = [
-          `That's a great question! Let me provide you with more details about my ${currentServiceId || 'services'}.`,
-          `I'd be happy to help you with that. Based on my ${currentChatProvider?.experience || 'experience'}, I can definitely assist you.`,
-          `Thank you for asking! I specialize in ${currentChatProvider?.specialties?.slice(0, 2).join(' and ') || 'quality service'} and would love to work with you.`,
-          `That's definitely something I can help with. My clients have been very satisfied with my work in this area.`
-        ];
-        response = responses[Math.floor(Math.random() * responses.length)];
-      }
-
-      addMessage('received', response);
-    }
-
-    // Auto-resize textarea
-    chatInput.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-    });
-
-    // Send message on Enter key
-    chatInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    // Close chat when clicking outside
-    chatOverlay.addEventListener('click', function(e) {
-      if (e.target === chatOverlay) {
-        closeChatWidget();
-      }
-    });
-
-    // Render service card
     function renderServiceCard(service) {
       return `
-        <div class="service-card" data-category="${service.category}" onclick="openService('${service.id}')">
+        <div class="service-card" onclick="openService('${service.id}')">
           <div class="service-icon">${service.icon}</div>
           <h3 class="service-title">${service.title}</h3>
           <p class="service-description">${service.description}</p>
-          <div class="service-stats">
-            <div class="stat-item">
-              <span>${service.providers}</span>
-              <span>providers</span>
-            </div>
-            <div class="stat-item">
-              <span>${stars(service.avgRating)}</span>
-              <span>${service.avgRating}</span>
-            </div>
-          </div>
         </div>
       `;
     }
 
-    // Render provider card
-    function renderProviderCard(provider) {
-      const bgColor = getAvatarColor(provider.name);
+    // --- SEARCH AND FILTER LOGIC ---
+
+    function filterServices(category) {
+      if(profilePage.classList.contains('hidden') === false || providersPage.classList.contains('hidden') === false) {
+        // If on another page, go to home first
+        homePage.classList.remove('hidden');
+        providersPage.classList.add('hidden');
+        profilePage.classList.add('hidden');
+      }
+
+      currentCategory = category;
+      
+      // Update sidebar
+      navItems.forEach(item => {
+        item.classList.toggle('active', item.dataset.category === category);
+      });
+
+      if (category === 'all') {
+        pageTitle.textContent = "ServiceSnap";
+        renderFeaturedServices();
+        renderMoreServices();
+        moreServicesGrid.classList.add('hidden');
+        seeAllBtn.classList.remove('hidden');
+      } else {
+        // Filter logic
+        const all = [...featuredCategories, ...moreCategories];
+        const filtered = all.filter(s => s.category === category);
+        
+        pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + " Services";
+        servicesGrid.innerHTML = filtered.map(s => renderServiceCard(s)).join('');
+        
+        moreServicesGrid.classList.add('hidden');
+        seeAllBtn.classList.add('hidden');
+      }
+    }
+
+    function searchServices(query) {
+      if(profilePage.classList.contains('hidden') === false || providersPage.classList.contains('hidden') === false) {
+        homePage.classList.remove('hidden');
+        providersPage.classList.add('hidden');
+        profilePage.classList.add('hidden');
+      }
+
+      const all = [...featuredCategories, ...moreCategories];
+      const lowerQuery = query.toLowerCase();
+      const filtered = all.filter(s => 
+        s.title.toLowerCase().includes(lowerQuery) || 
+        s.description.toLowerCase().includes(lowerQuery)
+      );
+
+      pageTitle.textContent = query ? `Search: "${query}"` : "ServiceSnap";
+      servicesGrid.innerHTML = filtered.map(s => renderServiceCard(s)).join('');
+      
+      moreServicesGrid.classList.add('hidden');
+      seeAllBtn.classList.add('hidden');
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if(val) searchServices(val);
+      else filterServices('all'); // Reset
+    });
+
+    // --- NAVIGATION LOGIC ---
+
+    function openService(serviceId) {
+      currentServiceId = serviceId;
+      homePage.classList.add('hidden');
+      providersPage.classList.remove('hidden');
+      profilePage.classList.add('hidden'); // Fix: ensure profile is hidden
+      
+      const providers = serviceProviders[serviceId] || [];
+      
+      providersPage.innerHTML = `
+        <button class="back-btn" onclick="showHomePage()">← Back</button>
+        <h1 class="page-title">${serviceId.charAt(0).toUpperCase() + serviceId.slice(1)} Providers</h1>
+        <div class="services-grid">
+          ${providers.length ? providers.map(p => renderProviderCard(p)).join('') : '<p>No providers available yet.</p>'}
+        </div>
+      `;
+    }
+
+    // --- UPDATED RENDER CARD ---
+    function renderProviderCard(p) {
+      const bgColor = getAvatarColor(p.name);
+      // Construct specialties text
+      const specialtiesText = p.specialties ? p.specialties.join(', ') : '';
+      
       return `
-        <div class="provider-card" onclick="viewProfile('${currentServiceId}', ${provider.id})">
-          ${provider.photo ? 
-            `<img src="${provider.photo}" alt="${provider.name}" class="provider-photo">` :
-            `<div class="provider-avatar" style="background: ${bgColor};">${initials(provider.name)}</div>`
-          }
+        <div class="provider-card" onclick="viewProfile('${currentServiceId}', ${p.id})">
+          ${p.photo ? `<img src="${p.photo}" class="provider-photo">` : `<div class="provider-avatar" style="background:${bgColor}">${initials(p.name)}</div>`}
           <div class="provider-info">
-            <h3 class="provider-name">${provider.name} ${provider.verified ? '<img src="badge.png" alt="Verified" class="verified-icon" />' : ''}</h3>
-            <p class="provider-details">${provider.experience} • ${provider.location}</p>
-            <p class="provider-details">${provider.specialties.join(', ')}</p>
-            <div class="provider-rating">
-              <span>${stars(provider.rating)}</span>
-              <span>${provider.rating} (${provider.reviews} reviews)</span>
-              <span style="margin-left: auto; font-weight: 600; color: var(--accent);">${provider.hourlyRate}</span>
-            </div>
+            <h3 class="provider-name">
+              ${p.name}
+              ${p.verified ? `<img src="badge.png" class="verified-icon" alt="Verified" />` : ''}
+            </h3>
+            <p class="provider-details">📍 ${p.location}</p>
+            ${specialtiesText ? `<p class="provider-specialties">${specialtiesText}</p>` : ''}
+            <div class="provider-rating">⭐ ${p.rating}</div>
           </div>
-          <div class="provider-actions">
-            <button class="btn btn-sm" onclick="event.stopPropagation(); openChatWidget('${currentServiceId}', ${provider.id})">Contact</button>
-            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); viewProfile('${currentServiceId}', ${provider.id})">View Profile</button>
-          </div>
+          <button class="btn btn-sm">View Profile</button>
         </div>
       `;
     }
 
-    // Show provider profile
+    // --- PROFILE VIEW ---
     function viewProfile(serviceId, providerId) {
       const providers = serviceProviders[serviceId] || [];
       const provider = providers.find(p => p.id === providerId);
-      
-      if (!provider) {
-        alert('Provider not found');
-        return;
-      }
+      if (!provider) return;
 
-      // Hide other pages and show profile page
       homePage.classList.add('hidden');
       providersPage.classList.add('hidden');
       profilePage.classList.remove('hidden');
 
       const bgColor = getAvatarColor(provider.name);
+      const portfolioHTML = provider.portfolio ? provider.portfolio.map(img => `<div class="portfolio-item"><img src="${img}" class="portfolio-img"></div>`).join('') : '<p>No portfolio.</p>';
+      const reviewsHTML = provider.reviews_detail ? provider.reviews_detail.map(r => `<div class="review-item"><div class="review-header"><span class="review-author">${r.author}</span><span class="review-date">${r.date}</span></div><div class="provider-rating">${stars(r.rating)}</div><p class="review-text">${r.text}</p></div>`).join('') : '<p>No reviews.</p>';
+      const servicesHTML = provider.services ? provider.services.map(s => `<li>${s}</li>`).join('') : '';
 
-      // Generate portfolio HTML
-      const portfolioHTML = provider.portfolio ? provider.portfolio.map(img => 
-        `<div class="portfolio-item">
-          <img src="${img}" alt="Work sample" class="portfolio-img">
-         </div>`
-      ).join('') : '<p>No portfolio images available yet.</p>';
-
-      // Generate reviews HTML
-      const reviewsHTML = provider.reviews_detail ? provider.reviews_detail.map(review => 
-        `<div class="review-item">
-          <div class="review-header">
-            <span class="review-author">${review.author}</span>
-            <span class="review-date">${review.date}</span>
-          </div>
-          <div class="provider-rating">
-            <span>${stars(review.rating)}</span>
-          </div>
-          <p class="review-text">${review.text}</p>
-         </div>`
-      ).join('') : '<p>No reviews yet.</p>';
-
-      // Generate services HTML
-      const servicesHTML = provider.services ? provider.services.map(service => 
-        `<li>${service}</li>`
-      ).join('') : '<li>General services</li>';
-
-      // Populate profile page
       profilePage.innerHTML = `
-        <button class="back-btn" onclick="goBackToProviders('${serviceId}')">
-            &larr; Back to ${serviceId} Providers
-        </button>
+        <button class="back-btn" onclick="openService('${serviceId}')">&larr; Back to List</button>
         
         <div class="profile-header">
-          ${provider.photo ? 
-            `<img src="${provider.photo}" alt="${provider.name}" class="profile-photo">` :
-            `<div class="profile-photo" style="background: ${bgColor}; display: grid; place-items: center; font-size: 2rem; font-weight: 700;">${initials(provider.name)}</div>`
-          }
+          ${provider.photo ? `<img src="${provider.photo}" class="profile-photo">` : `<div class="profile-photo" style="background:${bgColor}">${initials(provider.name)}</div>`}
           <div class="profile-details">
-            <h1 class="profile-name">${provider.name} ${provider.verified ? '<img src="badge.png" alt="Verified" class="verified-icon" />' : ''}</h1>
+            <h1 class="profile-name">
+              ${provider.name}
+              ${provider.verified ? `<img src="badge.png" class="verified-icon" style="width:24px;height:24px;" />` : ''}
+            </h1>
             <p class="profile-title">${provider.title}</p>
             <div class="profile-meta">
-              <div class="meta-item">
-                <span>📍</span>
-                <span>${provider.location}</span>
-              </div>
-              <div class="meta-item">
-                <span>⭐</span>
-                <span>${provider.rating} (${provider.reviews} reviews)</span>
-              </div>
-              <div class="meta-item">
-                <span>💼</span>
-                <span>${provider.experience}</span>
-              </div>
-              <div class="meta-item">
-                <span>📅</span>
-                <span>Joined ${provider.joinDate}</span>
-              </div>
+              <span class="meta-item">📍 ${provider.location}</span>
+              <span class="meta-item">⭐ ${provider.rating} (${provider.reviews} reviews)</span>
             </div>
             <div class="profile-actions">
-              <button class="btn btn-success" onclick="bookProvider(${provider.id})">Book Now - ${provider.hourlyRate}</button>
-              <button class="btn btn-outline" onclick="openChatWidget('${serviceId}', ${provider.id})">Send Message</button>
-              <button class="btn btn-outline" onclick="saveProvider(${provider.id})">Save Provider</button>
+              <button class="btn btn-success" onclick="location.href='booking.html?providerId=${provider.id}'">Book Now</button>
+              <button class="btn btn-outline" onclick="openChatWidget('${serviceId}', ${provider.id})">Message</button>
             </div>
           </div>
         </div>
@@ -1827,274 +603,115 @@
         <div class="profile-grid">
           <div class="profile-main">
             <div class="profile-section">
-              <h3 class="section-title">📝 About Me</h3>
-              <div class="section-content">
-                <p>${provider.about}</p>
+              <h3 class="section-title">📅 Availability Schedule</h3>
+              <div class="calendar-wrapper">
+                <div id="providerCalendar"></div>
+              </div>
+              <div class="calendar-legend">
+                <span class="legend-item"><span class="dot available"></span> Available</span>
+                <span class="legend-item"><span class="dot booked"></span> Booked</span>
               </div>
             </div>
 
             <div class="profile-section">
-              <h3 class="section-title">🛠️ Services Offered</h3>
-              <div class="section-content">
-                <ul style="margin: 0; padding-left: 20px;">
-                  ${servicesHTML}
-                </ul>
-              </div>
+              <h3 class="section-title">About</h3>
+              <p>${provider.about}</p>
             </div>
-
             <div class="profile-section">
-              <h3 class="section-title">🖼️ Portfolio</h3>
-              <div class="section-content">
-                <div class="portfolio-grid">
-                  ${portfolioHTML}
-                </div>
-              </div>
+              <h3 class="section-title">Services</h3>
+              <ul>${servicesHTML}</ul>
             </div>
-
             <div class="profile-section">
-              <h3 class="section-title">⭐ Reviews (${provider.reviews})</h3>
-              <div class="section-content">
-                ${reviewsHTML}
-              </div>
+              <h3 class="section-title">Portfolio</h3>
+              <div class="portfolio-grid">${portfolioHTML}</div>
+            </div>
+            <div class="profile-section">
+              <h3 class="section-title">Reviews</h3>
+              ${reviewsHTML}
             </div>
           </div>
 
           <div class="profile-sidebar">
             <div class="profile-section">
-              <h3 class="section-title">📋 Quick Info</h3>
-              <div class="section-content">
-                <p><strong>Rate:</strong> ${provider.hourlyRate}</p>
-                <p><strong>Availability:</strong> ${provider.availability}</p>
-                <p><strong>Languages:</strong> ${provider.languages ? provider.languages.join(', ') : 'English'}</p>
-                <p><strong>Response time:</strong> Usually within 2 hours</p>
-              </div>
+              <h3 class="section-title">Info</h3>
+              <p><strong>Rate:</strong> ${provider.hourlyRate}</p>
+              <p><strong>Location:</strong> ${provider.location}</p>
             </div>
-
             <div class="profile-section">
-              <h3 class="section-title">🏆 Specialties</h3>
-              <div class="section-content">
-                ${provider.specialties.map(specialty => 
-                  `<span class="chip" style="background: var(--accent); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; margin: 4px; display: inline-block;">${specialty}</span>`
-                ).join('')}
-              </div>
-            </div>
-
-            <div class="profile-section">
-              <h3 class="section-title">📞 Contact</h3>
-              <div class="section-content">
-                <button class="btn btn-outline" style="width: 100%; margin-bottom: 8px;" onclick="openChatWidget('${serviceId}', ${provider.id})">📧 Send Message</button>
-                <button class="btn btn-outline" style="width: 100%; margin-bottom: 8px;" onclick="callProvider(${provider.id})">📱 Request Call</button>
-                <button class="btn btn-outline" style="width: 100%;" onclick="shareProvider(${provider.id})">📤 Share Profile</button>
-              </div>
+              <h3 class="section-title">Specialties</h3>
+              <div>${provider.specialties.map(s => `<span class="chip" style="background:#e5e7eb;padding:4px 8px;border-radius:12px;margin:2px;display:inline-block;font-size:0.8rem">${s}</span>`).join('')}</div>
             </div>
           </div>
         </div>
       `;
+
+      // Initialize Calendar
+      loadProviderSchedule(provider.id);
     }
 
-    // Go back to providers list
-    function goBackToProviders(serviceId) {
-      profilePage.classList.add('hidden');
-      openService(serviceId);
-    }
-
-    // Show home page
-    function showHomePage() {
-      currentPage = 'home';
-      homePage.classList.remove('hidden');
-      providersPage.classList.add('hidden');
-      profilePage.classList.add('hidden');
-      
-      // Update nav active state
-      navItems.forEach(item => {
-        item.classList.toggle('active', item.dataset.category === 'all');
+    function loadProviderSchedule(providerId) {
+      const bookedDates = mockProviderSchedules[providerId] || [];
+      flatpickr("#providerCalendar", {
+        inline: true,
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        disable: bookedDates,
+        theme: "material_blue"
       });
-      
-      currentCategory = 'all';
-      renderFeaturedServices();
-      renderMoreServices();
-      moreServicesGrid.classList.toggle('hidden', !showingAll);
-      seeAllBtn.classList.remove('hidden');
-      searchInput.value = '';
     }
 
-    // Open service providers page
-    function openService(serviceId) {
-      currentPage = 'providers';
-      currentServiceId = serviceId;
-      
-      // Find service details
-      const allServices = [...featuredCategories, ...moreCategories];
-      const service = allServices.find(s => s.id === serviceId);
-      
-      if (!service) {
-        alert('Service not found');
-        return;
-      }
-
-      // Get providers for this service
-      const providers = serviceProviders[serviceId] || [];
-      
-      // Hide other pages and show providers page
-      homePage.classList.add('hidden');
-      profilePage.classList.add('hidden');
-      providersPage.classList.remove('hidden');
-      
-      // Populate providers page
-      providersPage.innerHTML = `
-        <button class="back-btn" onclick="showHomePage()">
-          ← Back to Services
-        </button>
-        <h1 class="page-title">${service.title} Providers</h1>
-        <p class="page-subtitle">Choose from ${providers.length} verified ${service.title.toLowerCase()} professionals</p>
-        
-        <div class="providers-list">
-          ${providers.length > 0 
-            ? providers.map(renderProviderCard).join('')
-            : `<div style="text-align:center; padding:40px; color:var(--muted);">
-                <h3>No providers available yet</h3>
-                <p>We're working to connect you with quality ${service.title.toLowerCase()} professionals.</p>
-               </div>`
-          }
-        </div>
-      `;
+    // --- CHAT LOGIC ---
+    function openChatWidget(serviceId, providerId) {
+      const providers = serviceProviders[serviceId] || serviceProviders['cleaning'];
+      const provider = providers.find(p => p.id === providerId);
+      currentChatProvider = provider;
+      const bgColor = getAvatarColor(provider.name);
+      chatProviderAvatar.style.background = bgColor;
+      chatProviderAvatar.textContent = initials(provider.name);
+      chatProviderName.textContent = provider.name;
+      chatProviderTitle.textContent = provider.title;
+      chatMessages.innerHTML = '';
+      addMessage('received', `Hello! I'm ${provider.name}. How can I help?`);
+      chatOverlay.classList.remove('hidden');
+    }
+    function closeChatWidget() { chatOverlay.classList.add('hidden'); }
+    function sendMessage() {
+      const txt = chatInput.value.trim();
+      if(!txt) return;
+      addMessage('sent', txt);
+      chatInput.value = '';
+      setTimeout(() => addMessage('received', "Thanks for your message! I'll reply shortly."), 1000);
+    }
+    function sendQuickReply(txt) {
+      addMessage('sent', txt);
+      setTimeout(() => addMessage('received', "Thanks for asking! " + txt), 1000);
+    }
+    function addMessage(type, text) {
+      const div = document.createElement('div');
+      div.className = `chat-message ${type}`;
+      div.textContent = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Provider action functions (updated contactProvider to use chat)
-    function contactProvider(providerId) {
-      // This function is now replaced by openChatWidget
-      openChatWidget(currentServiceId, providerId);
-    }
-
-    function bookProvider(providerId) {
-      window.location.href = `booking.html?providerId=${providerId}`;
-    }
-
-    function saveProvider(providerId) {
-      alert(`Provider ${providerId} saved to favorites!`);
-    }
-
-    function callProvider(providerId) {
-      alert(`Requesting callback from provider ${providerId}...`);
-    }
-
-    function shareProvider(providerId) {
-      alert(`Sharing provider ${providerId} profile...`);
-    }
-
-    // Render featured services
-    function renderFeaturedServices() {
-      servicesGrid.innerHTML = featuredCategories.map(renderServiceCard).join('');
-    }
-
-    // Render more services
-    function renderMoreServices() {
-      moreServicesGrid.innerHTML = moreCategories.map(renderServiceCard).join('');
-    }
-
-    // Filter services by category
-    function filterServices(category) {
-      if (currentPage !== 'home') {
-        showHomePage();
-        return;
-      }
-      
-      currentCategory = category;
-      
-      // Update nav active state
-      navItems.forEach(item => {
-        item.classList.toggle('active', item.dataset.category === category);
-      });
-      
-      if (category === 'all') {
-        renderFeaturedServices();
-        renderMoreServices();
-        moreServicesGrid.classList.toggle('hidden', !showingAll);
-        seeAllBtn.classList.remove('hidden');
-      } else {
-        const allServices = [...featuredCategories, ...moreCategories];
-        const filtered = allServices.filter(s => s.category === category);
-        servicesGrid.innerHTML = filtered.map(renderServiceCard).join('');
-        moreServicesGrid.classList.add('hidden');
-        seeAllBtn.classList.add('hidden');
-      }
-      
-      searchInput.value = '';
-    }
-
-    // Search functionality
-    function searchServices(query) {
-      const allServices = [...featuredCategories, ...moreCategories];
-      const filtered = allServices.filter(service =>
-        service.title.toLowerCase().includes(query.toLowerCase()) ||
-        service.description.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      servicesGrid.innerHTML = filtered.map(renderServiceCard).join('');
-      moreServicesGrid.classList.add('hidden');
-      seeAllBtn.classList.add('hidden');
-    }
-
-    // Toggle more services
-    seeAllBtn.addEventListener("click", function() {
+    // --- OTHER UI ---
+    document.getElementById('seeAllBtn').addEventListener('click', function() {
       showingAll = !showingAll;
-      moreServicesGrid.classList.toggle("hidden");
+      document.getElementById('moreServices').classList.toggle('hidden');
       this.textContent = showingAll ? "See Fewer" : "See All Services";
     });
 
-    // Search input handler
-    searchInput.addEventListener('input', (e) => {
-      if (currentPage !== 'home') return;
-      
-      const query = e.target.value.trim();
-      if (query) {
-        searchServices(query);
+    // --- AUTH ---
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        authContent.classList.remove('hidden');
+        showHomePage();
+        userAvatar.textContent = initials(user.email);
       } else {
-        filterServices(currentCategory);
-        seeAllBtn.classList.toggle('hidden', currentCategory !== 'all');
+        window.location.href = 'index.html';
       }
     });
-
-    // Sign out
-    signOutBtn.addEventListener('click', async () => {
-      try {
-        await auth.signOut();
-        window.location.replace('index.html');
-      } catch (e) {
-        console.error('Sign out failed:', e);
-        alert('Could not sign out. Please try again.');
-      }
-    });
-
-    // Auth state listener
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        window.location.replace('index.html');
-        return;
-      }
-
-      currentUser = user;
-      const name = user.displayName || user.email || '';
-      userAvatar.textContent = initials(name);
-
-      authContent.classList.remove('hidden');
-      showHomePage();
-
-      try {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-          const userData = userDoc.data();
-          userAvatar.textContent = initials(userData.name || user.email);
-        }
-      } catch (error) {
-        console.log('Could not load user data:', error);
-      }
-    });
-
-    // Error handling
-    window.addEventListener('error', (e) => {
-      console.error('[global error]', e.message, 'at', e.filename + ':' + e.lineno);
-    });
+    document.getElementById('signOutBtn').addEventListener('click', () => auth.signOut());
   </script>
 </body>
 </html>

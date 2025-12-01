@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>My Profile - HomeServices</title>
+  <title>My Profile - ServiceSnap</title>
 
-  <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
@@ -14,375 +13,502 @@
     :root {
       --bg: #0f172a;
       --card: #1e293b;
-      --card-light: #334155;
-      --text: #f8fafc;
-      --text-secondary: #cbd5e1;
+      --border: #334155;
+      --text: #f1f5f9;
       --text-muted: #94a3b8;
       --accent: #3b82f6;
       --accent-hover: #2563eb;
       --success: #10b981;
-      --error: #ef4444;
-      --border: #334155;
-      --border-light: #475569;
-      --input-bg: #1e293b;
-      --input-focus: #475569;
+      --danger: #ef4444;
+      --input-bg: #0f172a;
+      --ring: rgba(59, 130, 246, 0.5);
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      background: linear-gradient(135deg, var(--bg) 0%, #1e293b 100%);
+      background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
-      padding: 20px 0;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
     }
-    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
-    .header { text-align: center; margin-bottom: 32px; }
-    .header h1 {
-      font-size: 2.5rem; font-weight: 700; margin: 0 0 8px 0;
-      background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      animation: fadeIn 0.5s ease-out;
     }
-    .header p { color: var(--text-muted); font-size: 1.1rem; margin: 0; }
-    .profile-card {
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Navigation Header */
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .back-btn:hover { color: var(--accent); }
+
+    /* Profile Card */
+    .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 24px;
       padding: 32px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      overflow: hidden;
     }
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-    .card-title { flex: 1; }
-    .card-title h2 { font-size: 1.875rem; font-weight: 600; margin: 0 0 6px 0; color: var(--text); }
-    .card-title p { color: var(--text-muted); margin: 0; font-size: 1rem; }
-    .back-link {
-      color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: 12px; transition: all 0.2s ease; font-weight: 500;
+
+    /* Decorative top bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--accent), #06b6d4);
     }
-    .back-link:hover { background: rgba(59, 130, 246, 0.2); transform: translateY(-1px); }
-    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 24px 0; border: none; }
+
+    /* Profile Header Section */
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 700; color: white;
+      border: 4px solid var(--card);
+      box-shadow: 0 0 0 2px var(--border);
+    }
+
+    .badge-verified {
+      position: absolute;
+      bottom: 0; right: 0;
+      background: var(--success);
+      color: white;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 3px solid var(--card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    .profile-title h2 { margin: 0; font-size: 1.5rem; }
+    .profile-title p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Form Styles */
     .form-grid { display: grid; gap: 24px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 640px) {
-      .form-row { grid-template-columns: 1fr; }
-      .card-header { flex-direction: column; align-items: stretch; }
+    @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+    
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .field-group { display: flex; flex-direction: column; }
-    .field-label { font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .field-input, .field-textarea, .field-select {
-      background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
-      color: var(--text); font-size: 1rem; transition: all 0.2s ease; font-family: inherit;
+
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      outline: none;
     }
-    .field-input:focus, .field-textarea:focus, .field-select:focus { outline: none; border-color: var(--accent); background: var(--input-focus); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-    .field-input:disabled { background: var(--card-light); color: var(--text-muted); cursor: not-allowed; }
-    .field-textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
-    .field-select { cursor: pointer; }
-    .char-counter { margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); text-align: right; }
-    .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; cursor: pointer; transition: all 0.2s ease; border: none; font-family: inherit; }
-    .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); }
-    .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--card-light); border-color: var(--border-light); }
-    .message { margin-top: 16px; padding: 12px 16px; border-radius: 12px; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-    .message.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
-    .message.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    input:disabled { opacity: 0.6; cursor: not-allowed; }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+
+    .char-counter {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Actions */
+    .actions-container {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .main-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 20px; border-radius: 12px;
+      font-weight: 600; font-size: 0.9rem;
+      cursor: pointer; border: none; transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.7; cursor: wait; }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1); color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
     .hidden { display: none !important; }
-    .login-prompt { text-align: center; padding: 40px 20px; }
-    .login-prompt h3 { margin: 0 0 16px 0; color: var(--text); font-size: 1.25rem; }
-    .login-prompt p { color: var(--text-muted); margin: 0 0 24px 0; }
-    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .avatar {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; font-weight: 700; color: white; margin: 0 auto 16px auto;
+
+    /* Toast Notification */
+    .toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      padding: 12px 24px; border-radius: 50px;
+      font-weight: 600; font-size: 0.9rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+      z-index: 1000; display: flex; align-items: center; gap: 8px;
     }
-    .service-option { display: flex; align-items: center; gap: 8px; padding: 8px; font-size: 1rem; }
-    .service-emoji { font-size: 1.2em; width: 24px; display: inline-block; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
+    .toast.success { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
+    .toast.error { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Login Prompt */
+    .login-prompt { text-align: center; padding: 60px 20px; }
   </style>
 </head>
 <body>
+
+  <div id="toast" class="toast"></div>
+
   <div class="container">
-    <div class="header">
-      <h1>🏠 HomeServices</h1>
-      <p>Connect families with trusted home service professionals</p>
+    <div class="nav-header">
+      <a href="feed.html" class="brand">🏠 ServiceSnap</a>
+      <a href="feed.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Feed
+      </a>
     </div>
 
-    <div class="profile-card">
+    <div class="card">
+      
       <div id="authed" class="hidden">
-        <div class="card-header">
-          <div class="card-title">
-            <h2>My Profile</h2>
-            <p>Manage your account information and service preferences</p>
+        <div class="profile-header">
+          <div class="avatar-wrapper">
+            <div class="avatar" id="avatar">U</div>
+            <div class="badge-verified">✓</div>
           </div>
-          <a href="feed.html" class="back-link">← Back to Services</a>
+          <div class="profile-title">
+            <h2 id="displayNameDisplay">User Name</h2>
+            <p id="emailDisplay">user@example.com</p>
+          </div>
         </div>
-
-        <div class="divider"></div>
 
         <div class="form-grid">
           <div class="form-row">
             <div class="field-group">
-              <label class="field-label">Full Name</label>
-              <input id="name" type="text" class="field-input" placeholder="Enter your full name" maxlength="80"/>
+              <label>Full Name</label>
+              <input id="name" type="text" placeholder="e.g. Juan dela Cruz" maxlength="80"/>
             </div>
             <div class="field-group">
-              <label class="field-label">Email Address</label>
-              <input id="email" type="email" class="field-input" disabled/>
+              <label>Email Address</label>
+              <input id="email" type="email" disabled style="opacity: 0.5"/>
             </div>
           </div>
+
           <div class="field-group">
-            <label class="field-label">I am looking for</label>
-            <select id="role" class="field-select">
-              <optgroup label="🏠 Home Services">
-                <option value="cleaning" class="service-option">🧹 House Cleaning Services</option>
-                <option value="childcare" class="service-option">👶 Child Care / Nanny Services</option>
-                <option value="eldercare" class="service-option">👴 Elder Care Services</option>
-                <option value="cooking" class="service-option">👩‍🍳 Personal Chef / Cooking Services</option>
-                <option value="maintenance" class="service-option">🔧 Home Maintenance Services</option>
-                <option value="gardening" class="service-option">🌱 Garden Care / Landscaping</option>
+            <label>I am here to</label>
+            <select id="role">
+              <optgroup label="Find Services">
+                <option value="cleaning">🧹 Find House Cleaning</option>
+                <option value="childcare">👶 Find Child Care</option>
+                <option value="eldercare">👴 Find Elder Care</option>
+                <option value="cooking">👩‍🍳 Find a Chef</option>
+                <option value="maintenance">🔧 Find Maintenance</option>
+                <option value="gardening">🌱 Find Gardening</option>
               </optgroup>
-              <optgroup label="💼 Service Provider">
-                <option value="provider-cleaning" class="service-option">🧹 I provide house cleaning services</option>
-                <option value="provider-childcare" class="service-option">👶 I provide child care services</option>
-                <option value="provider-eldercare" class="service-option">👴 I provide elder care services</option>
-                <option value="provider-cooking" class="service-option">👩‍🍳 I provide cooking services</option>
-                <option value="provider-maintenance" class="service-option">🔧 I provide maintenance services</option>
-                <option value="provider-gardening" class="service-option">🌱 I provide gardening services</option>
+              <optgroup label="Offer Services (Provider)">
+                <option value="provider-cleaning">🧹 Offer Cleaning Services</option>
+                <option value="provider-childcare">👶 Offer Child Care</option>
+                <option value="provider-eldercare">👴 Offer Elder Care</option>
+                <option value="provider-cooking">👩‍🍳 Offer Cooking</option>
+                <option value="provider-maintenance">🔧 Offer Maintenance</option>
+                <option value="provider-gardening">🌱 Offer Gardening</option>
               </optgroup>
             </select>
           </div>
+
           <div class="field-group">
-            <label class="field-label">About Me</label>
+            <label>Bio / Requirements</label>
             <textarea 
               id="bio" 
-              class="field-textarea" 
               maxlength="600" 
-              placeholder="Tell us about yourself... If you're looking for services, describe what you need, your family situation, location, and requirements. If you're a service provider, share your experience, skills, and what makes you special."
+              placeholder="Tell us a bit about yourself. If you're a provider, list your experience. If you're a client, describe what you usually need."
             ></textarea>
             <div id="count" class="char-counter">0 / 600</div>
           </div>
         </div>
 
-        <div class="actions">
-          <!-- Only shown to service providers, or just after registration -->
-          <button id="listServiceBtn" class="btn btn-primary hidden" type="button">List a Service</button>
-
-          <button id="saveBtn" class="btn btn-primary">
-            <span id="saveText">Save Changes</span>
-            <span id="saveLoader" class="loading hidden"></span>
-          </button>
-          <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+        <div class="actions-container">
+          <div class="main-actions">
+            <button id="saveBtn" class="btn btn-primary">
+              <span id="saveText">Save Profile</span>
+              <div id="saveLoader" class="spinner hidden"></div>
+            </button>
+            <button id="myBookingsBtn" class="btn btn-secondary">📅 My Bookings</button>
+            <button id="listServiceBtn" class="btn btn-secondary hidden">➕ List Service</button>
+          </div>
+          
+          <button id="signOutBtn" class="btn btn-danger">Sign Out</button>
         </div>
-
-        <div id="msg" class="message hidden"></div>
       </div>
 
-      <div id="anon" class="login-prompt">
-        <div class="avatar">?</div>
-        <h3>Authentication Required</h3>
-        <p>Please sign in to view and edit your profile information.</p>
+      <div id="anon" class="login-prompt hidden">
+        <div class="avatar" style="margin: 0 auto 16px; background: var(--border);">?</div>
+        <h3 style="margin-bottom: 8px;">Access Restricted</h3>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Please sign in to manage your profile.</p>
         <a href="index.html" class="btn btn-primary">Go to Login</a>
       </div>
+
     </div>
   </div>
 
   <script>
-    // Firebase configuration
+    // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyDBOmdxfRixu9DGdCEf4HD2DCxbHX2LNNU",
       authDomain: "finding-service-auth.firebaseapp.com",
       projectId: "finding-service-auth",
-      storageBucket: "finding-service-auth.appspot.com",
-      messagingSenderId: "404280706761",
-      appId: "1:404280706761:web:8c808b583447b133832f18"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // DOM elements
+    // --- DOM Elements ---
     const $ = (id) => document.getElementById(id);
-    const authed = $('authed');
-    const anon = $('anon');
+    const authedEl = $('authed');
+    const anonEl = $('anon');
     const nameInput = $('name');
     const emailInput = $('email');
     const roleSelect = $('role');
     const bioInput = $('bio');
-    const count = $('count');
-    const msg = $('msg');
+    const countEl = $('count');
+    const toastEl = $('toast');
+    
+    // Buttons
     const saveBtn = $('saveBtn');
     const saveText = $('saveText');
     const saveLoader = $('saveLoader');
     const signOutBtn = $('signOutBtn');
     const listServiceBtn = $('listServiceBtn');
+    const myBookingsBtn = $('myBookingsBtn');
+    
+    // Display Elements
+    const avatarEl = $('avatar');
+    const displayNameEl = $('displayNameDisplay');
+    const emailDisplayEl = $('emailDisplay');
 
-    // ---- NEW: Check for justRegistered param -----
-    function getQueryParam(param) {
-      return new URLSearchParams(window.location.search).get(param);
-    }
-    const justRegistered = getQueryParam('justRegistered') === '1';
-
-    function showMsg(text, isSuccess = true) {
-      msg.textContent = text;
-      msg.className = `message ${isSuccess ? 'success' : 'error'}`;
-      msg.classList.remove('hidden');
-      setTimeout(() => msg.classList.add('hidden'), 4000);
-    }
-
-    function setLoading(loading) {
-      if (loading) {
-        saveText.classList.add('hidden');
-        saveLoader.classList.remove('hidden');
-        saveBtn.disabled = true;
-      } else {
-        saveText.classList.remove('hidden');
-        saveLoader.classList.add('hidden');
-        saveBtn.disabled = false;
-      }
-    }
-
-    // Character counter
-    bioInput.addEventListener('input', () => {
-      const length = bioInput.value.length;
-      count.textContent = `${length} / ${bioInput.maxLength}`;
-      count.style.color = length > 550 ? '#fca5a5' : 'var(--text-muted)';
-    });
-
-    // Authentication state observer
     let currentUID = null;
+
+    // --- Helper Functions ---
+    function showToast(msg, type = 'success') {
+      toastEl.textContent = msg;
+      toastEl.className = `toast show ${type}`;
+      setTimeout(() => toastEl.className = 'toast', 3000);
+    }
+
+    function getInitials(name) {
+      return name ? name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'U';
+    }
+
+    // --- Auth Listener ---
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        authed.classList.add('hidden');
-        anon.classList.remove('hidden');
+        authedEl.classList.add('hidden');
+        anonEl.classList.remove('hidden');
         return;
       }
 
-      authed.classList.remove('hidden');
-      anon.classList.add('hidden');
+      // Show UI
+      authedEl.classList.remove('hidden');
+      anonEl.classList.add('hidden');
+      
       currentUID = user.uid;
-      emailInput.value = user.email || '';
+      emailInput.value = user.email;
+      emailDisplayEl.textContent = user.email;
 
       try {
-        const snap = await db.collection('users').doc(user.uid).get();
-        const data = snap.exists ? snap.data() : {};
+        const doc = await db.collection('users').doc(user.uid).get();
+        const data = doc.exists ? doc.data() : {};
 
-        nameInput.value = user.displayName || data.name || '';
+        // Populate Fields
+        const userName = data.name || user.displayName || '';
+        nameInput.value = userName;
+        displayNameEl.textContent = userName || 'Welcome!';
+        avatarEl.textContent = getInitials(userName);
+        
+        bioInput.value = data.bio || '';
+        countEl.textContent = `${bioInput.value.length} / 600`;
 
-        // Handle role mapping - map old values to new service-specific ones
+        // Handle Role Logic
         let roleValue = data.role || 'cleaning';
-        if (roleValue === 'family') {
-          roleValue = 'cleaning';
-        } else if (roleValue === 'worker') {
-          roleValue = 'provider-cleaning';
-        }
+        // Map legacy roles
+        if (roleValue === 'family') roleValue = 'cleaning';
+        if (roleValue === 'worker') roleValue = 'provider-cleaning';
         roleSelect.value = roleValue;
 
-        bioInput.value = data.bio || '';
+        // Show/Hide "List Service" button
+        const isProvider = (data.userType === 'provider') || roleValue.startsWith('provider-');
+        if (isProvider) listServiceBtn.classList.remove('hidden');
+        else listServiceBtn.classList.add('hidden');
 
-        // Update counter
-        const length = bioInput.value.length;
-        count.textContent = `${length} / ${bioInput.maxLength}`;
-
-        // ---- MODIFIED: Show service button if provider or just registered ---
-        const isProvider = (data?.userType === 'provider') || roleSelect.value.startsWith('provider-');
-        if (isProvider || justRegistered) {
-          listServiceBtn.classList.remove('hidden');
-          // Remove justRegistered param from the URL after showing (for once only)
-          if (justRegistered) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        } else {
-          listServiceBtn.classList.add('hidden');
-        }
-      } catch (error) {
-        console.error('Profile load error:', error);
-        showMsg('Unable to load profile data. Please refresh the page.', false);
+      } catch (err) {
+        console.error(err);
+        showToast('Error loading profile', 'error');
       }
     });
 
-    // Redirect to add-service page (adjust filename if different)
-    listServiceBtn.addEventListener('click', () => {
-      window.location.href = 'add-service.html';
+    // --- Event Listeners ---
+    
+    // Bio Character Count
+    bioInput.addEventListener('input', () => {
+      countEl.textContent = `${bioInput.value.length} / 600`;
     });
 
-    // Save profile
+    // Navigation
+    myBookingsBtn.addEventListener('click', () => window.location.href = 'my-bookings.html');
+    listServiceBtn.addEventListener('click', () => window.location.href = 'add-service.html');
+
+    // Save Profile
     saveBtn.addEventListener('click', async () => {
-      if (!currentUID) return;
-
-      const name = nameInput.value.trim().slice(0, 80);
+      const name = nameInput.value.trim();
       const role = roleSelect.value;
-      const bio = bioInput.value.trim().slice(0, 600);
+      const bio = bioInput.value.trim();
 
-      if (!name) {
-        showMsg('Please enter your name', false);
-        nameInput.focus();
-        return;
-      }
-      if (!role) {
-        showMsg('Please select what you are looking for', false);
-        roleSelect.focus();
-        return;
-      }
+      if (!name) return showToast('Name is required', 'error');
 
-      setLoading(true);
+      // UI Loading State
+      saveBtn.disabled = true;
+      saveText.classList.add('hidden');
+      saveLoader.classList.remove('hidden');
 
       try {
-        // Update Firebase Auth profile
-        if (auth.currentUser && name && auth.currentUser.displayName !== name) {
+        // Update Auth Profile
+        if (auth.currentUser.displayName !== name) {
           await auth.currentUser.updateProfile({ displayName: name });
         }
 
-        // Determine user type based on role selection
         const isProvider = role.startsWith('provider-');
-        const serviceType = isProvider ? role.replace('provider-', '') : role;
-
-        // Update Firestore with enhanced data
+        
+        // Update Firestore
         await db.collection('users').doc(currentUID).set({
           name,
-          role, // Store the full role value
-          serviceType, // Store just the service category
-          userType: isProvider ? 'provider' : 'client', // Store user type
+          role,
+          serviceType: isProvider ? role.replace('provider-', '') : role,
+          userType: isProvider ? 'provider' : 'client',
           bio,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        // Show or hide the List Service button based on saved role (justRegistered is now one-time)
-        if (isProvider) {
-          listServiceBtn.classList.remove('hidden');
-        } else {
-          listServiceBtn.classList.add('hidden');
-        }
+        // Update UI visuals immediately
+        displayNameEl.textContent = name;
+        avatarEl.textContent = getInitials(name);
+        
+        if (isProvider) listServiceBtn.classList.remove('hidden');
+        else listServiceBtn.classList.add('hidden');
 
-        showMsg('Profile updated successfully!', true);
-      } catch (error) {
-        console.error('Save error:', error);
-        showMsg('Failed to save profile. Please try again.', false);
+        showToast('Profile saved successfully!');
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to save changes', 'error');
       } finally {
-        setLoading(false);
+        saveBtn.disabled = false;
+        saveText.classList.remove('hidden');
+        saveLoader.classList.add('hidden');
       }
     });
 
-    // Sign out
+    // Sign Out
     signOutBtn.addEventListener('click', async () => {
       try {
         await auth.signOut();
-        window.location.replace('index.html');
-      } catch (error) {
-        console.error('Sign out error:', error);
-        showMsg('Could not sign out. Please try again.', false);
+        window.location.href = 'index.html';
+      } catch (err) {
+        showToast('Error signing out', 'error');
       }
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        saveBtn.click();
-      }
-    });
   </script>
 </body>
 </html>
